@@ -2,7 +2,7 @@
 
 This is the repository for the corresponding npm package.
 
-The package provides a input field with a drop down menu to pick a possible option based on the current input as a react component.<br>
+The package provides an input field with a drop down menu to pick a possible option based on the current input as a react component. 
 Have a look at [w3schools.com](https://www.w3schools.com/howto/howto_js_autocomplete.asp) to see how you can do the same thing with pure html, css, and js.
 
 Below you will find some information on how to perform common tasks.<br>

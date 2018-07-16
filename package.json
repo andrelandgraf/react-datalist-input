@@ -1,0 +1,40 @@
+{
+  "name": "react-datalist-input",
+  "version": "1.0.0",
+  "description": "This package provides a react component as follows: an input field with a drop down menu to pick a possible option based on the current input.",
+  "main": "./DataListInput.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andrelandgraf/react-datalist-input.git"
+  },
+  "homepage": "https://github.com/andrelandgraf/react-datalist-input",
+  "bugs": "https://github.com/andrelandgraf/react-datalist-input/issues",
+
+  "authors": [
+    "Andre Landgraf <andre.timo.landgraf@gmail.com>"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "react": "^15.5.4"
+  },
+  "tags": [
+    "react",
+    "datalist",
+    "input",
+    "select",
+    "autocomplete",
+    "combobox",
+    "highlight"
+  ],
+  "keywords": [
+    "react",
+    "datalist",
+    "input"
+  ],
+  "dependencies": {
+    "prop-types": "^15.5.10"
+  },
+  "peerDependencies": {
+    "react": "^0.14.7 || ^15.0.0-0 || ^16.0.0-0"
+  }
+}
