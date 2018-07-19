@@ -8,6 +8,11 @@ Have a look at [w3schools.com](https://www.w3schools.com/howto/howto_js_autocomp
 
 For more information about react and the ecosystem see this [guide](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md).
 
+## Check it out yourself
+
+Have a look at this [demo app](https://stark-retreat-79786.herokuapp.com/) using the react-datalist-input component. 
+<br>It is running free on heroku, so sorry if it is down already. 
+
 ## Feedback
 Feel free to get inspired and more importantly provide [your feedback](https://github.com/andrelandgraf/react-datalist-input/issues) on structure and style. I'm more than happy to learn how to improve my code and architecture.
 
