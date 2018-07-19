@@ -49,17 +49,17 @@ render() {
         }
     });
     
-return(
-    <div>
-        <DataListInput placeholder={"Select an option from the drop down menu..."}
-                      items={items} onSelect={this.onSelect} match={this.matchCurrentInput}/>
-    </div>
+    return(
+        <div>
+            <DataListInput placeholder={"Select an option from the drop down menu..."}
+                          items={items} onSelect={this.onSelect} match={this.matchCurrentInput}/>
+        </div>
 );
 ```
 
-***Properties***
+## Properties 
 
-## item ##
+***items***
 
 - <b>Required</b> property! 
 - The array of options for the drop down menu.<br>
@@ -67,7 +67,7 @@ return(
     - key : an id that identifies the item within the array
     - label: the label that will be shown in the drop down menu
 
-## onSelect ##
+***onSelect***
 
 - <b>Required</b> property! 
 - The callback function that will be called if the user selects one item of the drop down menu.
@@ -75,7 +75,7 @@ return(
 - Parameter: (selectedKey) 
     - selectedKey: the Key Property of the item that the user selected
 
-## match ##
+***match***
 
 - Pass a match function as stated above for creating your own matching algorithm for the autocomplete functionality.
 - Parameter: (currentInput, item)
@@ -95,7 +95,7 @@ match = (currentInput, item) => {
 };
 ```
 
-## placeholder ##
+***placeholder***
 
 - The placeholder that will be shown inside the input field. 
 
