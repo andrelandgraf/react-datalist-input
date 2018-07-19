@@ -1,8 +1,6 @@
 ## Info
 
-This package provides an input field with a drop-down menu react component.
-
-The component contains an input field with a drop down menu to pick a possible option based on the current input as a react component. 
+This package provides one react component that contains an input field with a drop down menu to pick a possible option based on the current input. 
 
 Have a look at [w3schools.com](https://www.w3schools.com/howto/howto_js_autocomplete.asp) to see how you can do the same thing with pure html, css, and js.
 
