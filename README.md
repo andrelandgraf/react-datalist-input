@@ -1,6 +1,19 @@
 ## Info
 
-This package provides one react component that contains an input field with a drop down menu to pick a possible option based on the current input. 
+This package provides a single react component.
+
+The component contains an input field with a drop down menu to pick a possible option based on the current input as a react component.
+
+Following features describe and might distinguish the component from other npm packages that offer a similar react component:
+<br>
+- Hand over an array of options (items) with label and key properties
+- Feel free to add additional properties to access those on selection within your callback function
+- On selection the selected object will be passed to the callback function so you can access all properties of the selected item
+- Define your own matching algorithm to restrict which options should be shown in the drop down menu based on the current user input
+- Or do not pass an own matching algorithm and just use the default match function
+- The current user input will be highlighted (bold) within each label in the drop down menu
+- The callback function will be triggered only if the key property has changed since the last selection
+- Selecting the same item twice in a row will trigger the callback function only once (on the first selection)
 
 Have a look at [w3schools.com](https://www.w3schools.com/howto/howto_js_autocomplete.asp) to see how you can do the same thing with pure html, css, and js.
 
@@ -9,14 +22,14 @@ For more information about react and the ecosystem see this [guide](https://gith
 ## Check it out yourself
 
 Have a look at this [demo app](https://stark-retreat-79786.herokuapp.com/) using the react-datalist-input component. 
-<br>It is running free on heroku, so sorry if it is down already. 
+<br>The app is running on heroku for free, so I hope it is still up.
 
 ## Feedback
-Feel free to get inspired and more importantly provide [your feedback](https://github.com/andrelandgraf/react-datalist-input/issues) on structure and style. I'm more than happy to learn how to improve my code and architecture.
+Feel free to get inspired and more importantly please provide [your feedback](https://github.com/andrelandgraf/react-datalist-input/issues) on structure and style. I'm more than happy to learn how to improve my code and architecture.
 
 ## Installation
 
-**Install node dependencies**
+**Installation via npm**
 
 ```
 npm install react-datalist-input --save
@@ -27,27 +40,36 @@ npm install react-datalist-input --save
 ```
 import DataListInput from 'react-datalist-input';
 
-// create your own match algorithm if you want to
+/**
+ * create your own match algorithm if you want to do so
+ * @param currentInput String (the current user input)
+ * @param item (one item of the items array)
+ * @returns {boolean}
+ */
 matchCurrentInput = (currentInput, item) => {
-    const key = item.someAdditionalValue;
-    return (key.substr(0, currentInput.length).toUpperCase() === currentInput.toUpperCase());
-     
+    const yourLogic = item.someAdditionalValue;
+    return (yourLogic.substr(0, currentInput.length).toUpperCase() === currentInput.toUpperCase());
 };
 
-// callback function
-// gets called if the user selects one option out of the drop down menu
-onSelect = (selectedKey) => {
-    if (this.props.currentSymbol !== selectedKey)
-        this.props.onChangeSymbol(selectedKey);
+/**
+ * your callback function gets called if the user selects one option out of the drop down menu
+ * @param selectedItem object (the selected item / option)
+ * @returns {*}
+ */
+onSelect = (selectedItem) => {
+   this.doSomething(selectedItem);
 };
 
 render() {
     // the array you want to pass to the react-data-list component
-    // each element needs a key (id) and a label (what to show to the user)
+    // each element at least needs a key and a label
     const items = this.props.values.map((item, i) => {
         return {
+            // what to show to the user
             label: item.id  + ": " + item.name,
+            // key to identify the item within the array
             key: item.id,
+            // feel free to add your own app logic to access those properties later on
             someAdditionalValue: item.someAdditionalValue,
         }
     });
@@ -89,8 +111,8 @@ render() {
 ```
 /**
  * default function for matching the current input value (needle) and the values of the items array
- * @param currentInput
- * @param item
+ * @param currentInput String (the current user input)
+ * @param item (one item of the items array)
  * @returns {boolean}
  */
 match = (currentInput, item) => {
@@ -101,5 +123,6 @@ match = (currentInput, item) => {
 ***placeholder***
 
 - The placeholder that will be shown inside the input field. 
+- Default is an empty string
 
    

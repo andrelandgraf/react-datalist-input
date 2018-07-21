@@ -9,8 +9,8 @@ class DataListInput extends React.Component {
         super(props);
 
         this.state = {
-            /* label of the last valid selection */
-            lastValidSelect: "",
+            /*  last valid item that was selected from the drop down menu */
+            lastValidItem: undefined,
             /* current input text */
             currentInput: "",
             /* current set of matching items */
@@ -26,13 +26,14 @@ class DataListInput extends React.Component {
         this.indexOfMatch = this.indexOfMatch.bind(this);
         this.onHandleKeydown = this.onHandleKeydown.bind(this);
         this.onClickItem = this.onClickItem.bind(this);
+        this.onSelect = this.onSelect.bind(this);
     }
 
     /**
      * gets called when someone starts to write in the input field
      * @param event
      */
-    onHandleInput(event){
+    onHandleInput(event) {
         const currentInput = event.target.value;
         const matchingItems = this.props.items.filter((item) => {
             if (typeof(this.props.match) === typeof(Function))
@@ -53,7 +54,7 @@ class DataListInput extends React.Component {
      * @param item
      * @returns {boolean}
      */
-    match(currentInput, item){
+    match(currentInput, item) {
         return item.label.substr(0, currentInput.length).toUpperCase() === currentInput.toUpperCase();
     }
 
@@ -63,7 +64,7 @@ class DataListInput extends React.Component {
      * @param item
      * @returns {number}
      */
-    indexOfMatch(currentInput, item){
+    indexOfMatch(currentInput, item) {
         return item.label.toUpperCase().indexOf(currentInput.toUpperCase());
     }
 
@@ -71,7 +72,7 @@ class DataListInput extends React.Component {
      * handle key events
      * @param event
      */
-    onHandleKeydown(event){
+    onHandleKeydown(event) {
         // only do something if drop-down div is visible
         if (!this.state.visible) return;
         let currentFocusIndex = this.state.focusIndex;
@@ -92,37 +93,45 @@ class DataListInput extends React.Component {
                 focusIndex: currentFocusIndex,
             });
         } else if (event.keyCode === 13) {
-            // Enter pressed
+            // Enter pressed, similar to onClickItem
             if (this.state.focusIndex > -1) {
                 // Simulate a click on the "active" item:
                 const selectedItem = this.state.matchingItems[currentFocusIndex];
-                this.setState({
-                    currentInput: selectedItem.label,
-                    lastValidSelect: selectedItem.label,
-                    visible: false,
-                    focusIndex: -1,
-                });
-                this.props.onSelect(selectedItem.key);
+                this.onSelect(selectedItem);
             }
         }
     }
 
-
     /**
-     * gets called when onClick happens on one of the list elements
+     * onClickItem gets called when onClick happens on one of the list elements
      * @param event
      */
-    onClickItem(event){
+    onClickItem(event) {
         // update the input value and close the dropdown again
         const selectedKey = event.currentTarget.children[1].value;
-        const selectedLabel = this.state.matchingItems.find(item => item.key === selectedKey).label;
+        const selectedItem = this.state.matchingItems.find(item => item.key === selectedKey);
+        this.onSelect(selectedItem);
+    }
+
+    /**
+     * onSelect is called onClickItem and onEnter upon an option of the drop down menu
+     * does nothing if the key has not changed since the last onSelect event
+     * @param selectedItem
+     */
+    onSelect(selectedItem) {
+        if (selectedItem.key === this.state.lastValidItem.key) {
+            // do nothing onClick if key has not change since the last selection
+            return;
+        }
+        // change state to fit new selection
         this.setState({
-            currentInput: selectedLabel,
-            lastValidSelect: selectedLabel,
+            currentInput: selectedItem.label,
+            lastValidItem: selectedItem,
             visible: false,
             focusIndex: -1,
         });
-        this.props.onSelect(selectedKey);
+        // callback function onSelect
+        this.props.onSelect(selectedItem);
     }
 
     render() {
