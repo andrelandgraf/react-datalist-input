@@ -8,7 +8,7 @@ Following features describe and might distinguish the component from other npm p
 <br>
 - Hand over an array of options (items) with label and key properties
 - Feel free to add additional properties to access those on selection within your callback function
-- On selection the selected object will be passed to the callback function so you can access all properties of the selected item
+- On selection the selected item will be passed to the callback function
 - Define your own matching algorithm to restrict which options should be shown in the drop down menu based on the current user input
 - Or do not pass an own matching algorithm and just use the default match function
 - The current user input will be highlighted (bold) within each label in the drop down menu
