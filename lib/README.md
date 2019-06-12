@@ -1,1 +1,0 @@
-Feel free to use those files instead of the npm package if you want to tinker with the component / css and just use it inside your project.
