@@ -27,6 +27,8 @@ class DataListInput extends React.Component {
         this.onHandleKeydown = this.onHandleKeydown.bind(this);
         this.onClickItem = this.onClickItem.bind(this);
         this.onSelect = this.onSelect.bind(this);
+        this.renderItems = this.renderItems.bind(this);
+        this.renderInputField = this.renderInputField.bind(this);
     }
 
     /**
@@ -140,33 +142,44 @@ class DataListInput extends React.Component {
         this.props.onSelect(selectedItem);
     }
 
+    renderItems( items, focusIndex, activeItemClassName, itemClassName) {
+        return (
+            <div className="datalist-items">
+                {items.map((item, i) => {
+                    const isActive = focusIndex === i;
+                    const itemActiveClasses = isActive ? `datalist-active-item ${activeItemClassName}` : ''
+                    const itemClasses = `${itemClassName} ${itemActiveClasses};` 
+                    return (
+                        <div onClick={this.onClickItem}
+                            className={itemClasses}
+                            key={item.key}>
+                            {item.label.substr(0, this.indexOfMatch(currentInput, item))}
+                            <strong>{item.label.substr(this.indexOfMatch(currentInput, item), currentInput.length)}</strong>
+                            {item.label.substr(this.indexOfMatch(currentInput, item) + currentInput.length)}
+                            <input type='hidden' value={item.key}/>
+                        </div>
+                    )
+                })}
+            </div> );
+    }
+
+    renderInputField( placeholder, currentInput, inputClassName ) {
+        return (
+            <input onKeyDown={this.onHandleKeydown} onInput={this.onHandleInput} type="text"
+                className={ `autocomplete-input ${inputClassName}` } 
+                placeholder={placeholder} value={currentInput} /> );
+    }
+
     render() {
-        const currentInput = this.state.currentInput;
-        const items = this.state.matchingItems;
-
-        const placeholder = this.props.placeholder;
-
+        const { currentInput, matchingItems, focusIndex, visible } = this.state;
+        const { placeholder, inputClassName, activeItemClassName, itemClassName, requiredInputLength } = this.props;
+        const reachedRequiredLength = currentInput.length >= requiredInputLength;
         return (
             <div className="datalist-input">
-                <input onKeyDown={this.onHandleKeydown} onInput={this.onHandleInput} type="text"
-                       className="autocompleteInput"
-                       placeholder={placeholder} value={currentInput}/>
-                {(currentInput !== "" && this.state.visible &&
-                    <div className={"datalist-items"}>
-                        {items.map((item, i) => {
-                            return (
-                                <div onClick={this.onClickItem}
-                                     className={this.state.focusIndex === i ? " datalist-active-item" : undefined}
-                                     key={item.key}>
-                                    {item.label.substr(0, this.indexOfMatch(currentInput, item))}
-                                    <strong>{item.label.substr(this.indexOfMatch(currentInput, item), currentInput.length)}</strong>
-                                    {item.label.substr(this.indexOfMatch(currentInput, item) + currentInput.length)}
-                                    <input type='hidden' value={item.key}/>
-                                </div>
-                            )
-                        })}
-                    </div>
-                )}
+                { this.renderInputField( placeholder, valu, inputClassName ) }
+                {  reachedRequiredLength && visible &&
+                    this.renderItems( matchingItems, focusIndex, activeItemClassName, itemClassName )
+                }
             </div>
         );
     }
@@ -176,7 +189,20 @@ DataListInput.propTypes = {
     items: PropTypes.array.isRequired,
     placeholder: PropTypes.string,
     onSelect: PropTypes.func.isRequired,
-    match: PropTypes.func
+    match: PropTypes.func,
+    inputClassName: PropTypes.string,
+    itemClassName: PropTypes.string,
+    activeItemClassName: PropTypes.string,
+    requiredInputLength: PropTypes.number,
+};
+
+DataListInput.defaultProps = {
+    placeholder: '',
+    match: undefined,
+    inputClassName: '',
+    itemClassName: '',
+    activeItemClassName: '',
+    requiredInputLength: 1,
 };
 
 export default DataListInput;
