@@ -4,15 +4,14 @@ import PropTypes from 'prop-types';
 import './index.css';
 
 class DataListInput extends React.Component {
-
-    constructor(props) {
-        super(props);
+    constructor( props ) {
+        super( props );
 
         this.state = {
             /*  last valid item that was selected from the drop down menu */
             lastValidItem: undefined,
             /* current input text */
-            currentInput: "",
+            currentInput: '',
             /* current set of matching items */
             matchingItems: [],
             /* visibility property of the drop down menu */
@@ -20,23 +19,13 @@ class DataListInput extends React.Component {
             /* index of the currently focused item in the drop down menu */
             focusIndex: 0,
         };
-
-        this.onHandleInput = this.onHandleInput.bind(this);
-        this.match = this.match.bind(this);
-        this.indexOfMatch = this.indexOfMatch.bind(this);
-        this.onHandleKeydown = this.onHandleKeydown.bind(this);
-        this.onClickItem = this.onClickItem.bind(this);
-        this.onSelect = this.onSelect.bind(this);
-        this.renderItems = this.renderItems.bind(this);
-        this.renderInputField = this.renderInputField.bind(this);
-        this.renderItemLabel = this.renderItemLabel.bind(this);
     }
 
     /**
      * gets called when someone starts to write in the input field
      * @param value
      */
-    onHandleInput( event ){
+    onHandleInput = ( event ) => {
         const currentInput = event.target.value;
         const { items, match } = this.props;
         const matchingItems = items.filter( ( item ) => {
@@ -49,7 +38,7 @@ class DataListInput extends React.Component {
             focusIndex: 0,
             visible: true,
         } );
-    }
+    };
 
     /**
      * default function for matching the current input value (needle)
@@ -58,9 +47,8 @@ class DataListInput extends React.Component {
      * @param item
      * @returns {boolean}
      */
-    match( currentInput, item ) { 
-        return item.label.substr( 0, currentInput.length ).toUpperCase() === currentInput.toUpperCase();
-    }
+    match = ( currentInput, item ) => item
+        .label.substr( 0, currentInput.length ).toUpperCase() === currentInput.toUpperCase();
 
     /**
      * function for getting the index of the currentValue inside a value of the values array
@@ -68,15 +56,14 @@ class DataListInput extends React.Component {
      * @param item
      * @returns {number}
      */
-    indexOfMatch( currentInput, item ) { 
-        return item.label.toUpperCase().indexOf( currentInput.toUpperCase() );
-    }
+    indexOfMatch = ( currentInput, item ) => item
+        .label.toUpperCase().indexOf( currentInput.toUpperCase() );
 
     /**
      * handle key events
      * @param event
      */
-    onHandleKeydown( event ) {
+    onHandleKeydown = ( event ) => {
         const { visible, focusIndex, matchingItems } = this.state;
         // only do something if drop-down div is visible
         if ( !visible ) return;
@@ -105,13 +92,13 @@ class DataListInput extends React.Component {
                 this.onSelect( selectedItem );
             }
         }
-    }
+    };
 
     /**
      * onClickItem gets called when onClick happens on one of the list elements
      * @param event
      */
-    onClickItem( event ) {
+    onClickItem = ( event ) => {
         const { matchingItems } = this.state;
         // update the input value and close the dropdown again
         const elements = event.currentTarget.children;
@@ -124,14 +111,15 @@ class DataListInput extends React.Component {
         }
         const selectedItem = matchingItems.find( item => item.key === selectedKey );
         this.onSelect( selectedItem );
-    }
+    };
 
     /**
      * onSelect is called onClickItem and onEnter upon an option of the drop down menu
      * does nothing if the key has not changed since the last onSelect event
      * @param selectedItem
      */
-    onSelect( selectedItem ) {
+    onSelect = ( selectedItem ) => {
+        console.log( selectedItem );
         const { lastValidItem } = this.state;
         if ( lastValidItem && selectedItem.key === lastValidItem.key ) {
             // do not trigger the callback function
@@ -153,22 +141,19 @@ class DataListInput extends React.Component {
         // callback function onSelect
         const { onSelect } = this.props;
         onSelect( selectedItem );
-    }
+    };
 
-    renderItemLabel( currentInput, item ) {
-        return (
-            <React.Fragment>
-                {item.label.substr( 0, this.indexOfMatch( currentInput, item ) )}
-                <strong>
-                    {item.label.substr( this.indexOfMatch( currentInput, item ), currentInput.length )}
-                </strong>
-                {item.label.substr( this.indexOfMatch( currentInput, item ) + currentInput.length )}
-            </React.Fragment>
-        );
-    }
+    renderItemLabel = ( currentInput, item ) => (
+        <React.Fragment>
+            {item.label.substr( 0, this.indexOfMatch( currentInput, item ) )}
+            <strong>
+                {item.label.substr( this.indexOfMatch( currentInput, item ), currentInput.length )}
+            </strong>
+            {item.label.substr( this.indexOfMatch( currentInput, item ) + currentInput.length )}
+        </React.Fragment>
+    )
 
-    renderItems( currentInput, items, focusIndex, activeItemClassName, itemClassName ) {
-        return (
+    renderItems = ( currentInput, items, focusIndex, activeItemClassName, itemClassName ) => (
         <div className="datalist-items">
             {items.map( ( item, i ) => {
                 const isActive = focusIndex === i;
@@ -188,21 +173,19 @@ class DataListInput extends React.Component {
                     </div>
                 );
             } )}
-        </div> );
-    }
+        </div>
+    );
 
-    renderInputField( placeholder, currentInput, inputClassName ) {
-        return (
-            <input
-                onChange={this.onHandleInput}
-                onKeyDown={this.onHandleKeydown}
-                type="text"
-                className={`autocomplete-input ${ inputClassName }`}
-                placeholder={placeholder}
-                value={currentInput}
-            />
-        );
-    }
+    renderInputField = ( placeholder, currentInput, inputClassName ) => (
+        <input
+            onChange={this.onHandleInput}
+            onKeyDown={this.onHandleKeydown}
+            type="text"
+            className={`autocomplete-input ${ inputClassName }`}
+            placeholder={placeholder}
+            value={currentInput}
+        />
+    )
 
     render() {
         const {
