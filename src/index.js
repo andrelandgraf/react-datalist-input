@@ -169,7 +169,7 @@ class DataListInput extends React.Component {
                         onKeyUp={event => event.preventDefault()}
                     >
                         { this.renderItemLabel( currentInput, item )}
-                        <input type="hidden" value={item.key} />
+                        <input type="hidden" value={item.key} readOnly />
                     </div>
                 );
             } )}
