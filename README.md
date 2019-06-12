@@ -125,4 +125,25 @@ match = (currentInput, item) => {
 - The placeholder that will be shown inside the input field. 
 - Default is an empty string
 
+***itemClassName***
+
+- Additional classes to style each input field in the dropdown menu.
+- Default is an empty string
+
+***activeItemClassName***
+
+- Additional classes to style the active input field.
+- Default is an empty string
+
+***inputClassName***
+
+- Additional classes to style the input field.
+- Default is an empty string
+
+***requiredInputLength***
+
+- Number to specify the threshold until when the dropdown menu should appear.
+- Example `requiredInputLength=3`, only if the user input is longer than 2 characters, the dropdown menu will appear.
+- Default is zero.
+
    
