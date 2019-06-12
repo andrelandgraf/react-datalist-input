@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import './index.css';
+import './DataListInput.css';
 
 class DataListInput extends React.Component {
     constructor( props ) {
