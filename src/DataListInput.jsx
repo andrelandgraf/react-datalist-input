@@ -27,22 +27,23 @@ class DataListInput extends React.Component {
      */
     onHandleInput = ( event ) => {
         const currentInput = event.target.value;
-        const { items, match } = this.props;
+        const { items, match, dropDownLength } = this.props;
         const matchingItems = items.filter( ( item ) => {
             if ( typeof ( match ) === typeof ( Function ) ) { return match( currentInput, item ); }
             return this.match( currentInput, item );
         } );
+        const displayableItems = matchingItems.slice( dropDownLength, matchingItems.length );
         if( matchingItems.length > 0) {
             this.setState( {
                 currentInput,
-                matchingItems,
+                matchingItems: displayableItems,
                 focusIndex: 0,
                 visible: true,
             } );
         } else {
             this.setState( { 
                 currentInput,
-                matchingItems,
+                matchingItems: displayableItems,
                 visible: false,
                 focusIndex: -1,
             } ) 
@@ -232,6 +233,7 @@ DataListInput.propTypes = {
     requiredInputLength: PropTypes.number,
     clearInputOnSelect: PropTypes.bool,
     suppressReselect: PropTypes.bool,
+    dropDownLength: PropTypes.number,
 };
 
 DataListInput.defaultProps = {
@@ -243,6 +245,7 @@ DataListInput.defaultProps = {
     requiredInputLength: 0,
     clearInputOnSelect: false,
     suppressReselect: true,
+    dropDownLength: Infinity,
 };
 
 export default DataListInput;
