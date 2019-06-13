@@ -60,10 +60,14 @@ class DataListInput extends React.Component {
     }
 
     onClickInput = () => {
-        const { currentInput, visible, matchingItems } = this.state;
-        const { requiredInputLength, dropDownLength, items } = this.props;
+        const { currentInput, visible } = this.state;
+        const { requiredInputLength, dropDownLength, items, match } = this.props;
         const reachedRequiredLength = currentInput.length >= requiredInputLength;
         if ( reachedRequiredLength && !visible ) {
+            const matchingItems = items.filter( ( item ) => {
+                if ( typeof ( match ) === typeof ( Function ) ) { return match( currentInput, item ); }
+                return this.match( currentInput, item );
+            } );
             const displayableItems = matchingItems.length 
                 ? matchingItems : items.slice( 0, dropDownLength )
             this.setState( { visible: true, matchingItems: displayableItems, focusIndex: 0, } );
@@ -106,7 +110,7 @@ class DataListInput extends React.Component {
      * @param item
      * @returns {boolean}
      */
-    match = ( currentInput, item ) => item.contains( currentInput) && item
+    match = ( currentInput, item ) => item
         .label.substr( 0, currentInput.length ).toUpperCase() === currentInput.toUpperCase();
 
     /**
@@ -204,13 +208,21 @@ class DataListInput extends React.Component {
         onSelect( selectedItem );
     };
 
+    renderMatchingLabel = ( currentInput, item ) => (
+        <React.Fragment>
+            {item.label.substr( 0, this.indexOfMatch( currentInput, item ) ) }
+            <strong>
+                { item.label.substr( this.indexOfMatch( currentInput, item ), currentInput.length ) }
+            </strong>
+            { item.label.substr( this.indexOfMatch( currentInput, item ) + currentInput.length ) }
+        </React.Fragment>
+    );
+
     renderItemLabel = ( currentInput, item ) => (
         <React.Fragment>
-            {item.label.substr( 0, this.indexOfMatch( currentInput, item ) )}
-            <strong>
-                {item.label.substr( this.indexOfMatch( currentInput, item ), currentInput.length )}
-            </strong>
-            {item.label.substr( this.indexOfMatch( currentInput, item ) + currentInput.length )}
+            { this.indexOfMatch( currentInput, item ) > 0
+                ? this.renderMatchingLabel( currentInput, item )
+                : item.label }
         </React.Fragment>
     )
 

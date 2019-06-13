@@ -1,6 +1,6 @@
 {
   "name": "react-datalist-input",
-  "version": "1.1.19",
+  "version": "1.1.21",
   "description": "This package provides a react component as follows: an input field with a drop down menu to pick a possible option based on the current input.",
   "main": "./lib/DataListInput.js",
   "license": "MIT",
