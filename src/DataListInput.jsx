@@ -32,12 +32,16 @@ class DataListInput extends React.Component {
             if ( typeof ( match ) === typeof ( Function ) ) { return match( currentInput, item ); }
             return this.match( currentInput, item );
         } );
-        this.setState( {
-            currentInput,
-            matchingItems,
-            focusIndex: 0,
-            visible: true,
-        } );
+        if( matchingItems.length > 0) {
+            this.setState( {
+                currentInput,
+                matchingItems,
+                focusIndex: 0,
+                visible: true,
+            } );
+        } else {
+            his.setState( { currentInput } ) 
+        }
     };
 
     /**
