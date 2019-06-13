@@ -119,12 +119,13 @@ class DataListInput extends React.Component {
      * @param selectedItem
      */
     onSelect = ( selectedItem ) => {
+        const { suppressReselect, clearInputOnSelect } = this.props;
         const { lastValidItem } = this.state;
-        if ( lastValidItem && selectedItem.key === lastValidItem.key ) {
+        if ( suppressReselect && lastValidItem && selectedItem.key === lastValidItem.key ) {
             // do not trigger the callback function
             // but still change state to fit new selection
             this.setState( {
-                currentInput: selectedItem.label,
+                currentInput: clearInputOnSelect ? selectedItem.label : '',
                 visible: false,
                 focusIndex: -1,
             } );
@@ -132,7 +133,7 @@ class DataListInput extends React.Component {
         }
         // change state to fit new selection
         this.setState( {
-            currentInput: selectedItem.label,
+            currentInput: clearInputOnSelect ? selectedItem.label : '',
             lastValidItem: selectedItem,
             visible: false,
             focusIndex: -1,
@@ -220,6 +221,8 @@ DataListInput.propTypes = {
     itemClassName: PropTypes.string,
     activeItemClassName: PropTypes.string,
     requiredInputLength: PropTypes.number,
+    clearInputOnSelect: PropTypes.bool,
+    suppressReselect: PropTypes.bool,
 };
 
 DataListInput.defaultProps = {
@@ -228,7 +231,9 @@ DataListInput.defaultProps = {
     inputClassName: '',
     itemClassName: '',
     activeItemClassName: '',
-    requiredInputLength: 1,
+    requiredInputLength: 0,
+    clearInputOnSelect: false,
+    suppressReselect: true,
 };
 
 export default DataListInput;
