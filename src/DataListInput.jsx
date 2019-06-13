@@ -18,7 +18,45 @@ class DataListInput extends React.Component {
             visible: false,
             /* index of the currently focused item in the drop down menu */
             focusIndex: 0,
+            /* cleaner click events */
+            interactionHappened: false,
         };
+
+        window.addEventListener( 'click', this.onClickCloseMenu, false );
+    }
+
+    componentWillUnmount = ()  => {
+        window.removeEventListener( 'click', this.onClickCloseMenu );
+    }
+
+    onClickCloseMenu = ( event ) => {
+        const menu = document.getElementsByClassName( 'datalist-items' );
+        if ( !menu || !menu.length ) return;
+        // if rerender, items inside might change, allow one click without further checking
+        const { interactionHappened } = this.state;
+        if ( interactionHappened ) {
+            this.setState( { interactionHappened: false } );
+            return;
+        }
+        // do not do anything if input is clicked, as we have a dedicated func for that
+        const input = document.getElementByClassName( 'autocomplete-input' );
+        if( !input ) return;
+        for( let i = 0; i < input.length; i+=1 ) {
+            const targetIsInput = event.target === input[i];
+            const targetInInput = input[i].contains( event.target );
+            if ( targetIsInput || targetInInput ) return;
+        }
+        
+        // do not close menu if user clicked inside
+        for( let i = 0; i < input.length; i+=1 ) {
+            const targetInMenu = menu[ i ].contains( event.target );
+            const targetIsMenu = event.target === menu[ i ];
+            if ( targetIsInput || targetInInput ) return;
+        }
+        const { visible } = this.state;
+        if ( visible && ( !targetInMenu && !targetIsMenu ) ) {
+            this.setState( { visible: false, focusIndex: -1 } );
+        }
     }
 
     /**
@@ -138,6 +176,7 @@ class DataListInput extends React.Component {
                 currentInput: clearInputOnSelect ? '' : selectedItem.label,
                 visible: false,
                 focusIndex: -1,
+                interactionHappened: true,
             } );
             return;
         }
@@ -147,6 +186,7 @@ class DataListInput extends React.Component {
             lastValidItem: selectedItem,
             visible: false,
             focusIndex: -1,
+            interactionHappened: true,
         } );
         // callback function onSelect
         const { onSelect } = this.props;
@@ -186,9 +226,10 @@ class DataListInput extends React.Component {
         </div>
     );
 
-    renderInputField = ( placeholder, currentInput, inputClassName ) => (
+    renderInputField = ( placeholder, currentInput, inputClassName, reachedRequiredLength ) => (
         <input
             onChange={this.onHandleInput}
+            onClick={ reachedRequiredLength && this.setState( { visible: true } ) }
             onKeyDown={this.onHandleKeydown}
             type="text"
             className={`autocomplete-input ${ inputClassName }`}
@@ -207,7 +248,7 @@ class DataListInput extends React.Component {
         const reachedRequiredLength = currentInput.length >= requiredInputLength;
         return (
             <div className="datalist-input">
-                { this.renderInputField( placeholder, currentInput, inputClassName ) }
+                { this.renderInputField( placeholder, currentInput, inputClassName, reachedRequiredLength ) }
                 { reachedRequiredLength && visible
                     && this.renderItems( currentInput, matchingItems, focusIndex,
                         activeItemClassName, itemClassName )
