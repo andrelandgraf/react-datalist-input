@@ -40,7 +40,7 @@ class DataListInput extends React.Component {
                 visible: true,
             } );
         } else {
-            his.setState( { currentInput } ) 
+            this.setState( { currentInput } ) 
         }
     };
 
