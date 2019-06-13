@@ -40,7 +40,12 @@ class DataListInput extends React.Component {
                 visible: true,
             } );
         } else {
-            this.setState( { currentInput } ) 
+            this.setState( { 
+                currentInput,
+                matchingItems,
+                visible: false,
+                focusIndex: -1,
+            } ) 
         }
     };
 
