@@ -39,7 +39,7 @@ class DataListInput extends React.Component {
             return;
         }
         // do not do anything if input is clicked, as we have a dedicated func for that
-        const input = document.getElementByClassName( 'autocomplete-input' );
+        const input = document.getElementsByClassName( 'autocomplete-input' );
         if( !input ) return;
         for( let i = 0; i < input.length; i+=1 ) {
             const targetIsInput = event.target === input[i];
@@ -48,14 +48,25 @@ class DataListInput extends React.Component {
         }
         
         // do not close menu if user clicked inside
-        for( let i = 0; i < input.length; i+=1 ) {
+        for( let i = 0; i < menu.length; i+=1 ) {
             const targetInMenu = menu[ i ].contains( event.target );
             const targetIsMenu = event.target === menu[ i ];
-            if ( targetIsInput || targetInInput ) return;
+            if ( targetInMenu || targetIsMenu ) return;
         }
         const { visible } = this.state;
-        if ( visible && ( !targetInMenu && !targetIsMenu ) ) {
+        if ( visible ) {
             this.setState( { visible: false, focusIndex: -1 } );
+        }
+    }
+
+    onClickInput = () => {
+        const { currentInput, visible, matchingItems } = this.state;
+        const { requiredInputLength, dropDownLength, items } = this.props;
+        const reachedRequiredLength = currentInput.length >= requiredInputLength;
+        if ( reachedRequiredLength && !visible ) {
+            const displayableItems = matchingItems.length 
+                ? matchingItems : items.slice( 0, dropDownLength )
+            this.setState( { visible: true, matchingItems: displayableItems, focusIndex: 0, } );
         }
     }
 
@@ -70,7 +81,7 @@ class DataListInput extends React.Component {
             if ( typeof ( match ) === typeof ( Function ) ) { return match( currentInput, item ); }
             return this.match( currentInput, item );
         } );
-        const displayableItems = matchingItems.slice( dropDownLength, matchingItems.length );
+        const displayableItems = matchingItems.slice( 0, dropDownLength );
         if( matchingItems.length > 0) {
             this.setState( {
                 currentInput,
@@ -95,7 +106,7 @@ class DataListInput extends React.Component {
      * @param item
      * @returns {boolean}
      */
-    match = ( currentInput, item ) => item
+    match = ( currentInput, item ) => item.contains( currentInput) && item
         .label.substr( 0, currentInput.length ).toUpperCase() === currentInput.toUpperCase();
 
     /**
@@ -226,10 +237,10 @@ class DataListInput extends React.Component {
         </div>
     );
 
-    renderInputField = ( placeholder, currentInput, inputClassName, reachedRequiredLength ) => (
+    renderInputField = ( placeholder, currentInput, inputClassName ) => (
         <input
             onChange={this.onHandleInput}
-            onClick={ reachedRequiredLength && this.setState( { visible: true } ) }
+            onClick={ this.onClickInput }
             onKeyDown={this.onHandleKeydown}
             type="text"
             className={`autocomplete-input ${ inputClassName }`}
@@ -248,7 +259,7 @@ class DataListInput extends React.Component {
         const reachedRequiredLength = currentInput.length >= requiredInputLength;
         return (
             <div className="datalist-input">
-                { this.renderInputField( placeholder, currentInput, inputClassName, reachedRequiredLength ) }
+                { this.renderInputField( placeholder, currentInput, inputClassName ) }
                 { reachedRequiredLength && visible
                     && this.renderItems( currentInput, matchingItems, focusIndex,
                         activeItemClassName, itemClassName )
