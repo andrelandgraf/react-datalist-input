@@ -156,4 +156,10 @@ match = (currentInput, item) => {
 - If suppressReselect is set to false, selecting the same item again, it will trigger another onSelect callback call. 
 - Default is true.
 
+***dropDownLength***
+
+- Only display the first `dropDownLength` matches in the dropdown. Useful if the array is really big.
+- Number to specify max length of drop down.
+- Default is Infinity.
+
    
