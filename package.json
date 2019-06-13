@@ -2,7 +2,8 @@
   "name": "react-datalist-input",
   "version": "1.1.2",
   "description": "This package provides a react component as follows: an input field with a drop down menu to pick a possible option based on the current input.",
-  "main": "dist/main.js",
+  "main": "./lib/DataListInput.js",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/andrelandgraf/react-datalist-input.git"
@@ -12,7 +13,6 @@
   "authors": [
     "Andre Landgraf <andre.timo.landgraf@gmail.com>"
   ],
-  "license": "MIT",
   "tags": [
     "react",
     "datalist",
@@ -28,27 +28,26 @@
     "input"
   ],
   "devDependencies": {
-    "@babel/core": "^7.4.5",
-    "@babel/plugin-proposal-class-properties": "^7.4.4",
-    "@babel/preset-env": "^7.4.5",
-    "@babel/preset-react": "^7.0.0",
-    "babel-loader": "^8.0.6",
+    "babel-core": "^6.21.0",
+    "babel-loader": "^7.1.4",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.16.0",
+    "babel-preset-stage-0": "^6.24.1",
     "css-loader": "^3.0.0",
-    "html-loader": "^0.5.5",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
-    "style-loader": "^0.23.1",
-    "webpack": "^4.33.0",
-    "webpack-cli": "^3.3.4"
-  },
-  "dependencies": {
-    "prop-types": "^15.6.1"
+    "path": "^0.12.7",
+    "prop-types": "^15.6.0",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "webpack": "^4.5.0",
+    "webpack-cli": "^3.2.1",
+    "style-loader": "^0.23.1"
   },
   "peerDependencies": {
-    "react": "^0.14.9 || ^15.3.0 || ^16.0.0-rc || ^16.0"
+    "prop-types": "^15.6.0",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --mode production"
   }
 }
