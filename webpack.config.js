@@ -1,35 +1,34 @@
-module.exports = {
-  module: {
-    rules: [
-      {
-        test: /\.(js|jsx)$/,
-        exclude: /node_modules/,
-        use: {
-          loader: "babel-loader"
-        }
-      },
-      {
-        test: /^(?!.*?\.module).*\.css$/,
-        use: ['style-loader', 'css-loader']
-    },
-    {
-        test: /\.module\.css$/,
-        use: ['style-loader', {
-            loader: 'css-loader',
-            options: {
-                modules: true
-            }
-        }]
-    },
+var path = require('path');
 
-      {
-        test: /\.html$/,
-        use: [
-          {
-            loader: "html-loader"
-          }
+module.exports = {
+    mode: 'production',
+    entry: './src/DataListInput.jsx',
+    output: {
+        path: path.resolve('lib'),
+        filename: 'DataListInput.js',
+        libraryTarget: 'commonjs2'
+    },
+    module: {
+        rules: [
+            {
+                test: /\.jsx?$/,
+                exclude: /(node_modules)/,
+                use: 'babel-loader'
+            },
+            {
+                test: /^(?!.*?\.module).*\.css$/,
+                use: ['style-loader', 'css-loader']
+            },
+            {
+                test: /\.module\.css$/,
+                use: ['style-loader', {
+                    loader: 'css-loader',
+                    options: {
+                        modules: true
+                    }
+                }]
+            }
         ]
-      }
-    ]
-  }
-};
+    }
+}
+
