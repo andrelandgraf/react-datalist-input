@@ -125,7 +125,7 @@ class DataListInput extends React.Component {
             // do not trigger the callback function
             // but still change state to fit new selection
             this.setState( {
-                currentInput: clearInputOnSelect ? selectedItem.label : '',
+                currentInput: clearInputOnSelect ? '' : selectedItem.label,
                 visible: false,
                 focusIndex: -1,
             } );
@@ -133,7 +133,7 @@ class DataListInput extends React.Component {
         }
         // change state to fit new selection
         this.setState( {
-            currentInput: clearInputOnSelect ? selectedItem.label : '',
+            currentInput: clearInputOnSelect ? '' : selectedItem.label,
             lastValidItem: selectedItem,
             visible: false,
             focusIndex: -1,
