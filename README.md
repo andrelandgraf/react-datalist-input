@@ -146,4 +146,14 @@ match = (currentInput, item) => {
 - Example `requiredInputLength=3`, only if the user input is longer than 2 characters, the dropdown menu will appear.
 - Default is zero.
 
+***clearInputOnSelect***
+
+- Should the input field be cleared on select on filled with selected item?
+- Default is false.
+
+***suppressReselect***
+
+- If suppressReselect is set to false, selecting the same item again, it will trigger another onSelect callback call. 
+- Default is true.
+
    
