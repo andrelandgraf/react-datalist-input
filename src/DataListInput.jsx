@@ -180,7 +180,7 @@ class DataListInput extends React.Component {
         let selectedKey;
         for ( let i = 0; i < elements.length; i += 1 ) {
             if ( elements[ i ].tagName === 'INPUT' ) {
-                selectedKey = Number( elements[ i ].value );
+                selectedKey = elements[ i ].value;
                 break;
             }
         }
