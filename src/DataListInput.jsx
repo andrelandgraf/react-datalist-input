@@ -74,7 +74,7 @@ class DataListInput extends React.Component {
             const currentInputIsLastItem = 
                 !clearInputOnSelect && lastValidItem && lastValidItem.label === currentInput;
             const displayableItems = matchingItems.length && !currentInputIsLastItem
-                ? matchingItems : items.slice( 0, dropDownLength );
+                ? matchingItems.slice( 0, dropDownLength ) : items.slice( 0, dropDownLength );
 
             let index = lastValidItem && !clearInputOnSelect
                 ? this.indexOfItem( lastValidItem, displayableItems ) : 0;
