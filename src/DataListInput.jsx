@@ -132,7 +132,7 @@ class DataListInput extends React.Component {
     indexOfMatch = ( currentInput, item ) => item
         .label.toUpperCase().indexOf( currentInput.toUpperCase() );
 
-    indexOfItem = ( item, items ) => items.indexOf( items.find( i => i.id === item.id ) )
+    indexOfItem = ( item, items ) => items.indexOf( items.find( i => i.key === item.key ) )
 
     /**
      * handle key events
