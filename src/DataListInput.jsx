@@ -297,10 +297,10 @@ DataListInput.propTypes = {
     items: PropTypes.arrayOf(
         PropTypes.shape( {
             label: PropTypes.string.isRequired,
-            key: PropTypes.oneOfType(
+            key: PropTypes.oneOfType( [
                 PropTypes.string,
                 PropTypes.number,
-            ).isRequired,
+            ] ).isRequired,
         } ),
     ).isRequired,
     placeholder: PropTypes.string,
