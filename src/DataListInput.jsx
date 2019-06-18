@@ -220,20 +220,20 @@ class DataListInput extends React.Component {
         onSelect( selectedItem );
     };
 
-    renderMatchingLabel = ( currentInput, item ) => (
+    renderMatchingLabel = ( currentInput, item, indexOfMatch ) => (
         <React.Fragment>
-            {item.label.substr( 0, this.indexOfMatch( currentInput, item ) ) }
+            {item.label.substr( 0, indexOfMatch ) }
             <strong>
-                { item.label.substr( this.indexOfMatch( currentInput, item ), currentInput.length ) }
+                { item.label.substr( indexOfMatch, currentInput.length ) }
             </strong>
-            { item.label.substr( this.indexOfMatch( currentInput, item ) + currentInput.length ) }
+            { item.label.substr( currentInput.length, item.label.length ) }
         </React.Fragment>
     );
 
-    renderItemLabel = ( currentInput, item ) => (
+    renderItemLabel = ( currentInput, item, indexOfMatch ) => (
         <React.Fragment>
-            { this.indexOfMatch( currentInput, item ) > 0
-                ? this.renderMatchingLabel( currentInput, item )
+            { indexOfMatch >= 0 && currentInput.length
+                ? this.renderMatchingLabel( currentInput, item, indexOfMatch )
                 : item.label }
         </React.Fragment>
     )
@@ -253,7 +253,7 @@ class DataListInput extends React.Component {
                         role="button"
                         onKeyUp={event => event.preventDefault()}
                     >
-                        { this.renderItemLabel( currentInput, item )}
+                        {this.renderItemLabel( currentInput, item, this.indexOfMatch( currentInput, item ) )}
                         <input type="hidden" value={item.key} readOnly />
                     </div>
                 );
