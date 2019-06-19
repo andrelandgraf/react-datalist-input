@@ -162,4 +162,10 @@ match = (currentInput, item) => {
 - Number to specify max length of drop down.
 - Default is Infinity.
 
+***initialValue***
+
+- Specigy an initial value for the input field.
+- For example, `initialValue={'hello world'}` will print `hello world` into the input field on first render. 
+- Default is empty string. 
+
    
