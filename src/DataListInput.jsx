@@ -7,11 +7,13 @@ class DataListInput extends React.Component {
     constructor( props ) {
         super( props );
 
+        const { initialValue } = this.props;
+
         this.state = {
             /*  last valid item that was selected from the drop down menu */
             lastValidItem: undefined,
             /* current input text */
-            currentInput: '',
+            currentInput: initialValue,
             /* current set of matching items */
             matchingItems: [],
             /* visibility property of the drop down menu */
@@ -313,6 +315,7 @@ DataListInput.propTypes = {
     clearInputOnSelect: PropTypes.bool,
     suppressReselect: PropTypes.bool,
     dropDownLength: PropTypes.number,
+    initialValue: PropTypes.string,
 };
 
 DataListInput.defaultProps = {
@@ -325,6 +328,7 @@ DataListInput.defaultProps = {
     clearInputOnSelect: false,
     suppressReselect: true,
     dropDownLength: Infinity,
+    initialValue: '',
 };
 
 export default DataListInput;
