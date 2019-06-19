@@ -63,9 +63,15 @@ class DataListInput extends React.Component {
 
     onClickInput = () => {
         const { currentInput, visible, lastValidItem } = this.state;
-        const { requiredInputLength, dropDownLength, items, match, clearInputOnSelect } = this.props;
+        const { requiredInputLength, dropDownLength, items, match, clearInputOnSelect, initialValue } = this.props;
         const reachedRequiredLength = currentInput.length >= requiredInputLength;
 
+        // if user clicks on input field with initialValue,
+        // the user most likely wants to clear the input field
+        if ( initialValue && currentInput === initialValue ) {
+            this.setState( { currentInput: '' } );
+        }
+        
         if ( reachedRequiredLength && !visible ) {
 
             const matchingItems = items.filter( ( item ) => {
