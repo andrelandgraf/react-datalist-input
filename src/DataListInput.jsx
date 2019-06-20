@@ -27,6 +27,17 @@ class DataListInput extends React.Component {
         window.addEventListener( 'click', this.onClickCloseMenu, false );
     }
 
+    componentDidUpdate = () => {
+        const { currentInput, visible } = this.state;
+        const { initialValue } = this.props;
+
+        // if we have an initialValue, we want to reset it everytime we update and are empty
+        // also setting a new initialValue will trigger this
+        if ( !currentInput && initialValue && !visible ) {
+            this.setState( { currentInput: initialValue } );
+        }
+    }
+
     componentWillUnmount = ()  => {
         window.removeEventListener( 'click', this.onClickCloseMenu );
     }
