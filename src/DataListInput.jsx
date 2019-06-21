@@ -259,8 +259,8 @@ class DataListInput extends React.Component {
         </React.Fragment>
     )
 
-    renderItems = ( currentInput, items, focusIndex, activeItemClassName, itemClassName ) => (
-        <div className="datalist-items">
+    renderItems = ( currentInput, items, focusIndex, activeItemClassName, itemClassName, dropdownClassName ) => (
+        <div className={`datalist-items ${dropdownClassName || 'default-datalist-items'}`}>
             {items.map( ( item, i ) => {
                 const isActive = focusIndex === i;
                 const itemActiveClasses = isActive ?
@@ -300,7 +300,8 @@ class DataListInput extends React.Component {
             currentInput, matchingItems, focusIndex, visible,
         } = this.state;
         const {
-            placeholder, inputClassName, activeItemClassName, itemClassName, requiredInputLength,
+            placeholder, inputClassName, activeItemClassName,
+            itemClassName, requiredInputLength, dropdownClassName
         } = this.props;
         const reachedRequiredLength = currentInput.length >= requiredInputLength;
         return (
@@ -308,7 +309,7 @@ class DataListInput extends React.Component {
                 { this.renderInputField( placeholder, currentInput, inputClassName ) }
                 { reachedRequiredLength && visible
                     && this.renderItems( currentInput, matchingItems, focusIndex,
-                        activeItemClassName, itemClassName )
+                        activeItemClassName, itemClassName, dropdownClassName )
                 }
             </div>
         );
@@ -329,6 +330,7 @@ DataListInput.propTypes = {
     onSelect: PropTypes.func.isRequired,
     match: PropTypes.func,
     inputClassName: PropTypes.string,
+    dropdownClassName: PropTypes.string,
     itemClassName: PropTypes.string,
     activeItemClassName: PropTypes.string,
     requiredInputLength: PropTypes.number,
@@ -342,6 +344,7 @@ DataListInput.defaultProps = {
     placeholder: '',
     match: undefined,
     inputClassName: '',
+    dropdownClassName: '',
     itemClassName: '',
     activeItemClassName: '',
     requiredInputLength: 0,

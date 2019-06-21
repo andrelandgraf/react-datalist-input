@@ -129,16 +129,26 @@ match = (currentInput, item) => {
 
 - Additional classes to style each input field in the dropdown menu.
 - Default is an empty string
+- Removes the default styling if set
 
 ***activeItemClassName***
 
 - Additional classes to style the active input field.
 - Default is an empty string
+- Removes the default styling if set
 
 ***inputClassName***
 
 - Additional classes to style the input field.
 - Default is an empty string
+- Removes the default styling if set
+
+***dropdownClassName***
+
+- Additional classes to style the dropdown box.
+- Default is an empty string
+- Adds on the required styling (e.g. position:absolute)
+- Removes the default styling if set
 
 ***requiredInputLength***
 
