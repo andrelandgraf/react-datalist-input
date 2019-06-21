@@ -5,43 +5,43 @@
     width: 100%;
     height: 100%;
 }
-.autocomplete-input {
-    border: 1px solid transparent;
-    background-color: #f1f1f1;
+.datalist-input .autocomplete-input {
     width: 100%;
-    height: 100%;
-    word-wrap: break-word;
 }
 
-.datalist-items {
+.datalist-input .datalist-items {
     position: absolute;
-    border: 1px solid #d4d4d4;
-    border-bottom: none;
-    border-top: none;
     z-index: 99;
     /*position the autocomplete items to be the same width as the container:*/
     top: 100%;
     left: 0;
     right: 0;
 }
-.datalist-items div:not(.datalist-active-item) {
+
+.datalist-input .default-datalist-items {
+    border: 1px solid #d4d4d4;
+    border-bottom: none;
+    border-top: none;
+}
+
+.datalist-input .datalist-items div:not(.datalist-active-item) {
     padding: 10px;
     cursor: pointer;
     background-color: #fff;
     border-bottom: 1px solid #d4d4d4;
 }
-.datalist-items div:not(.datalist-active-item):hover {
+.datalist-input .datalist-items div:not(.datalist-active-item):hover {
     /*when hovering an item:*/
     background-color: #e9e9e9;
 }
-.datalist-active-item {
+.datalist-input .datalist-active-item {
     /*when navigating through the items using the arrow keys:*/
-    padding: 10px;
     cursor: pointer;
-    border-bottom: 1px solid #d4d4d4;
 }
 
-.datalist-active-item-default {
+.datalist-input .datalist-active-item-default {
     background-color: DodgerBlue;
     color: #ffffff;
+    border-bottom: 1px solid #d4d4d4;
+    padding: 10px;
 }
