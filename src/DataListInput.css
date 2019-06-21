@@ -30,7 +30,7 @@
     background-color: #fff;
     border-bottom: 1px solid #d4d4d4;
 }
-.datalist-input .datalist-items div:not(.datalist-active-item):hover {
+.datalist-input .default-datalist-items div:not(.datalist-active-item):hover {
     /*when hovering an item:*/
     background-color: #e9e9e9;
 }
