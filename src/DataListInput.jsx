@@ -264,7 +264,7 @@ class DataListInput extends React.Component {
             {items.map( ( item, i ) => {
                 const isActive = focusIndex === i;
                 const itemActiveClasses = isActive ? `datalist-active-item ${ activeItemClassName }` : '';
-                const itemClasses = `${ itemClassName } ${ itemActiveClasses };`;
+                const itemClasses = `${ itemClassName } ${ itemActiveClasses }`;
                 return (
                     <div
                         onClick={this.onClickItem}
