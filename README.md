@@ -5,26 +5,13 @@ This package provides a single react component.
 The component contains an input field with a drop down menu to pick a possible option based on the current input as a react component.
 
 Following features describe and might distinguish the component from other npm packages that offer a similar react component:
-<br>
-- Hand over an array of options (items) with label and key properties
-- Feel free to add additional properties to access those on selection within your callback function
-- On selection the selected item will be passed to the callback function
-- Define your own matching algorithm to restrict which options should be shown in the drop down menu based on the current user input
-- Or do not pass an own matching algorithm and just use the default match function
-- The current user input will be highlighted (bold) within each label in the drop down menu
-- The callback function will be triggered only if the key property has changed since the last selection
-- Selecting the same item twice in a row will trigger the callback function only once (on the first selection)
 
 Have a look at [w3schools.com](https://www.w3schools.com/howto/howto_js_autocomplete.asp) to see how you can do the same thing with pure html, css, and js.
 
 For more information about react and the ecosystem see this [guide](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md).
 
-## Check it out yourself
-
-Have a look at this [demo app](https://stark-retreat-79786.herokuapp.com/) using the react-datalist-input component. 
-<br>The app is running on heroku for free, so I hope it is still up.
-
 ## Feedback
+
 Feel free to get inspired and more importantly please provide [your feedback](https://github.com/andrelandgraf/react-datalist-input/issues) on structure and style. I'm more than happy to learn how to improve my code and architecture.
 
 ## Installation
@@ -73,7 +60,7 @@ render() {
             someAdditionalValue: item.someAdditionalValue,
         }
     });
-    
+
     return(
         <div>
             <DataListInput placeholder={"Select an option from the drop down menu..."}
@@ -82,11 +69,11 @@ render() {
 );
 ```
 
-## Properties 
+## Properties
 
 ***items***
 
-- <b>Required</b> property! 
+- <b>Required</b> property!
 - The array of options for the drop down menu.<br>
 - Every item inside the array needs to have following properties:
     - key : an id that identifies the item within the array
@@ -94,10 +81,10 @@ render() {
 
 ***onSelect***
 
-- <b>Required</b> property! 
+- <b>Required</b> property!
 - The callback function that will be called if the user selects one item of the drop down menu.
 - Gets only called if the item changes. Selecting the same item twice will only trigger the function once (the first time).
-- Parameter: (selectedKey) 
+- Parameter: (selectedKey)
     - selectedKey: the Key Property of the item that the user selected
 
 ***match***
@@ -122,7 +109,7 @@ match = (currentInput, item) => {
 
 ***placeholder***
 
-- The placeholder that will be shown inside the input field. 
+- The placeholder that will be shown inside the input field.
 - Default is an empty string
 
 ***itemClassName***
@@ -163,7 +150,7 @@ match = (currentInput, item) => {
 
 ***suppressReselect***
 
-- If suppressReselect is set to false, selecting the same item again, it will trigger another onSelect callback call. 
+- If suppressReselect is set to false, selecting the same item again, it will trigger another onSelect callback call.
 - Default is true.
 
 ***dropDownLength***
@@ -175,7 +162,7 @@ match = (currentInput, item) => {
 ***initialValue***
 
 - Specigy an initial value for the input field.
-- For example, `initialValue={'hello world'}` will print `hello world` into the input field on first render. 
-- Default is empty string. 
+- For example, `initialValue={'hello world'}` will print `hello world` into the input field on first render.
+- Default is empty string.
 
-   
+
