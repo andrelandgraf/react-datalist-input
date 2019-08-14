@@ -296,7 +296,6 @@ class DataListInput extends React.Component {
     )
 
     render() {
-        console.log( "we are here");
         const {
             currentInput, matchingItems, focusIndex, visible,
         } = this.state;
