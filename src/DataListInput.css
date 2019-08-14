@@ -3,8 +3,8 @@
     position: relative;
     display: inline-block;
     width: 100%;
-    height: 100%;
 }
+
 .datalist-input .autocomplete-input {
     width: 100%;
 }
@@ -30,10 +30,12 @@
     background-color: #fff;
     border-bottom: 1px solid #d4d4d4;
 }
+
 .datalist-input .default-datalist-items div:not(.datalist-active-item):hover {
     /*when hovering an item:*/
     background-color: #e9e9e9;
 }
+
 .datalist-input .datalist-active-item {
     /*when navigating through the items using the arrow keys:*/
     cursor: pointer;
