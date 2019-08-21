@@ -252,7 +252,7 @@ class DataListInput extends React.Component {
             <strong>
                 { item.label.substr( indexOfMatch, currentInput.length ) }
             </strong>
-            { item.label.substr( currentInput.length, item.label.length ) }
+            { item.label.substr( indexOfMatch + currentInput.length, item.label.length ) }
         </React.Fragment>
     );
 

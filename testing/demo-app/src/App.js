@@ -34,6 +34,10 @@ function App() {
                     <DataListInput
                         items={data}
                         onSelect={i => setItem( i )}
+                        placeholder="Select a ingredient"
+                        clearInputOnSelect={false}
+                        suppressReselect={false}
+                        initialValue={item ? item.label : ''}
                     />
                 </div>
             </div>
