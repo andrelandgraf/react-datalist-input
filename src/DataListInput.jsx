@@ -67,8 +67,9 @@ class DataListInput extends React.Component {
             if ( targetInMenu || targetIsMenu ) return;
         }
         const { visible } = this.state;
+        const { onDropdownClose } = this.props;
         if ( visible ) {
-            this.setState( { visible: false, focusIndex: -1 } );
+            this.setState( { visible: false, focusIndex: -1 }, onDropdownClose );
         }
     }
 
@@ -76,7 +77,7 @@ class DataListInput extends React.Component {
         const { visible, lastValidItem } = this.state;
         let { currentInput } = this.state;
         const {
-            requiredInputLength, dropDownLength, items, match, clearInputOnSelect, initialValue,
+            requiredInputLength, dropDownLength, items, match, clearInputOnSelect, initialValue, onDropdownOpen
         } = this.props;
         const reachedRequiredLength = currentInput.length >= requiredInputLength;
 
@@ -104,7 +105,8 @@ class DataListInput extends React.Component {
                 ? this.indexOfItem( lastValidItem, displayableItems ) : 0;
             index = index > 0 ? index : 0;
 
-            this.setState( { visible: true, matchingItems: displayableItems, focusIndex: index } );
+            this.setState( { visible: true, matchingItems: displayableItems, focusIndex: index }, onDropdownOpen );
+
         }
     }
 
@@ -114,7 +116,7 @@ class DataListInput extends React.Component {
      */
     onHandleInput = ( event ) => {
         const currentInput = event.target.value;
-        const { items, match, dropDownLength } = this.props;
+        const { items, match, dropDownLength, onDropdownOpen, onDropdownClose } = this.props;
         const matchingItems = items.filter( ( item ) => {
             if ( typeof ( match ) === typeof ( Function ) ) { return match( currentInput, item ); }
             return this.match( currentInput, item );
@@ -126,14 +128,14 @@ class DataListInput extends React.Component {
                 matchingItems: displayableItems,
                 focusIndex: 0,
                 visible: true,
-            } );
+            }, onDropdownOpen );
         } else {
             this.setState( {
                 currentInput,
                 matchingItems: displayableItems,
                 visible: false,
                 focusIndex: -1,
-            } );
+            }, onDropdownClose );
         }
     };
 
@@ -220,7 +222,7 @@ class DataListInput extends React.Component {
      * @param selectedItem
      */
     onSelect = ( selectedItem ) => {
-        const { suppressReselect, clearInputOnSelect } = this.props;
+        const { suppressReselect, clearInputOnSelect, onDropdownClose } = this.props;
         const { lastValidItem } = this.state;
         if ( suppressReselect && lastValidItem && selectedItem.key === lastValidItem.key ) {
             // do not trigger the callback function
@@ -230,7 +232,7 @@ class DataListInput extends React.Component {
                 visible: false,
                 focusIndex: -1,
                 interactionHappened: true,
-            } );
+            }, onDropdownClose );
             return;
         }
         // change state to fit new selection
@@ -240,7 +242,7 @@ class DataListInput extends React.Component {
             visible: false,
             focusIndex: -1,
             interactionHappened: true,
-        } );
+        }, onDropdownClose );
         // callback function onSelect
         const { onSelect } = this.props;
         onSelect( selectedItem );
@@ -337,6 +339,8 @@ DataListInput.propTypes = {
     ).isRequired,
     placeholder: PropTypes.string,
     onSelect: PropTypes.func.isRequired,
+    onDropdownOpen: PropTypes.func,
+    onDropdownClose: PropTypes.func,
     match: PropTypes.func,
     inputClassName: PropTypes.string,
     dropdownClassName: PropTypes.string,
@@ -361,6 +365,8 @@ DataListInput.defaultProps = {
     suppressReselect: true,
     dropDownLength: Infinity,
     initialValue: '',
+    onDropdownOpen: () => {},
+    onDropdownClose: () => {},
 };
 
 export default DataListInput;
