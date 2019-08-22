@@ -21,8 +21,8 @@ declare module 'react-datalist-input' {
         suppressReselect?: boolean;
         dropDownLength?: number;
         initialValue?: string;
-        // onDropdownOpen?: () => void, // see https://github.com/andrelandgraf/react-datalist-input/pull/3
-        // onDropdownClose?: () => void,
+        onDropdownOpen?: () => void;
+        onDropdownClose?: () => void;
     }
 
     export default class DataListInput extends React.Component<DataListInputProperties> {
