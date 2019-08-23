@@ -77,7 +77,8 @@ class DataListInput extends React.Component {
         const { visible, lastValidItem } = this.state;
         let { currentInput } = this.state;
         const {
-            requiredInputLength, dropDownLength, items, match, clearInputOnSelect, initialValue, onDropdownOpen
+            requiredInputLength, dropDownLength, items, match,
+            clearInputOnSelect, initialValue, onDropdownOpen,
         } = this.props;
         const reachedRequiredLength = currentInput.length >= requiredInputLength;
 
@@ -105,8 +106,8 @@ class DataListInput extends React.Component {
                 ? this.indexOfItem( lastValidItem, displayableItems ) : 0;
             index = index > 0 ? index : 0;
 
-            this.setState( { visible: true, matchingItems: displayableItems, focusIndex: index }, onDropdownOpen );
-
+            this.setState( { visible: true, matchingItems: displayableItems, focusIndex: index },
+                onDropdownOpen );
         }
     }
 
@@ -116,7 +117,9 @@ class DataListInput extends React.Component {
      */
     onHandleInput = ( event ) => {
         const currentInput = event.target.value;
-        const { items, match, dropDownLength, onDropdownOpen, onDropdownClose } = this.props;
+        const {
+            items, match, dropDownLength, onDropdownOpen, onDropdownClose,
+        } = this.props;
         const matchingItems = items.filter( ( item ) => {
             if ( typeof ( match ) === typeof ( Function ) ) { return match( currentInput, item ); }
             return this.match( currentInput, item );
