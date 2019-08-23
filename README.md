@@ -105,6 +105,14 @@ match = (currentInput, item) => {
 };
 ```
 
+***onDropdownOpen***
+
+- The callback function that will be called after opening the drop down menu.
+
+***onDropdownClose***
+
+- The callback function that will be called after closing the drop down menu.
+    
 ***placeholder***
 
 - The placeholder that will be shown inside the input field.
