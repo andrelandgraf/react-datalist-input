@@ -413,10 +413,10 @@ DataListInput.defaultProps = {
     suppressReselect: true,
     dropDownLength: Infinity,
     initialValue: '',
-    debounceTime: 0,
-    debounceLoader: undefined,
     onDropdownOpen: () => {},
     onDropdownClose: () => {},
+    debounceTime: 0,
+    debounceLoader: undefined,
 };
 
 export default DataListInput;
