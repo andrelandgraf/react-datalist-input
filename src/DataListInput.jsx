@@ -72,8 +72,9 @@ class DataListInput extends React.Component {
             if ( targetInMenu || targetIsMenu ) return;
         }
         const { visible } = this.state;
+        const { onDropdownClose } = this.props;
         if ( visible ) {
-            this.setState( { visible: false, focusIndex: -1 } );
+            this.setState( { visible: false, focusIndex: -1 }, onDropdownClose );
         }
     }
 
@@ -120,7 +121,7 @@ class DataListInput extends React.Component {
         const { lastValidItem } = this.state;
         const {
             items, match, debounceTime, dropDownLength, requiredInputLength,
-            clearInputOnSelect,
+            clearInputOnSelect, onDropdownOpen, onDropdownClose,
         } = this.props;
         // cleanup waiting update step
         if ( this.inputHappenedTimeout ) {
@@ -136,26 +137,24 @@ class DataListInput extends React.Component {
         if ( !reachedRequiredLength ) return;
 
         const updateMatchingItems = () => {
-            console.log( 'starting' );
             const matchingItems = this.matching( currentInput, items, match );
             const displayableItems = matchingItems.slice( 0, dropDownLength );
             const showDragIndex = lastValidItem && !clearInputOnSelect;
             const index = showDragIndex ? this.indexOfItem( lastValidItem, displayableItems ) : 0;
             if ( matchingItems.length > 0 ) {
-                console.log( 'finished' );
                 this.setState( {
                     matchingItems: displayableItems,
                     focusIndex: index > 0 ? index : 0,
                     visible: true,
                     isMatchingDebounced: false,
-                } );
+                }, onDropdownOpen );
             } else {
                 this.setState( {
                     matchingItems: displayableItems,
                     visible: false,
                     focusIndex: -1,
                     isMatchingDebounced: false,
-                } );
+                }, onDropdownClose );
             }
         };
 
@@ -255,7 +254,7 @@ class DataListInput extends React.Component {
      * @param selectedItem
      */
     onSelect = ( selectedItem ) => {
-        const { suppressReselect, clearInputOnSelect } = this.props;
+        const { suppressReselect, clearInputOnSelect, onDropdownClose } = this.props;
         const { lastValidItem, isMatchingDebounced } = this.state;
         // block select call until last matching went through
         if ( isMatchingDebounced ) return;
@@ -267,7 +266,7 @@ class DataListInput extends React.Component {
                 visible: false,
                 focusIndex: -1,
                 interactionHappened: true,
-            } );
+            }, onDropdownClose );
             return;
         }
         // change state to fit new selection
@@ -277,7 +276,7 @@ class DataListInput extends React.Component {
             visible: false,
             focusIndex: -1,
             interactionHappened: true,
-        } );
+        }, onDropdownClose );
         // callback function onSelect
         const { onSelect } = this.props;
         onSelect( selectedItem );
@@ -386,6 +385,8 @@ DataListInput.propTypes = {
     ).isRequired,
     placeholder: PropTypes.string,
     onSelect: PropTypes.func.isRequired,
+    onDropdownOpen: PropTypes.func,
+    onDropdownClose: PropTypes.func,
     match: PropTypes.func,
     inputClassName: PropTypes.string,
     dropdownClassName: PropTypes.string,
@@ -414,6 +415,8 @@ DataListInput.defaultProps = {
     initialValue: '',
     debounceTime: 0,
     debounceLoader: undefined,
+    onDropdownOpen: () => {},
+    onDropdownClose: () => {},
 };
 
 export default DataListInput;
