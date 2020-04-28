@@ -6,29 +6,29 @@ import React, {
   import './DataListInput.css';
   
   /**
-   * default function for matching the current input value (needle)
-   * and the values of the items array
-   * @param currentInput
-   * @param item
-   * @returns {boolean}
-   */
+     * default function for matching the current input value (needle)
+     * and the values of the items array
+     * @param currentInput
+     * @param item
+     * @returns {boolean}
+     */
   const labelMatch = (currentInput, item) => item
     .label.substr(0, currentInput.length).toLowerCase() === currentInput.toLowerCase();
   
   /**
-   * function for getting the index of the currentValue inside a value of the values array
-   * @param currentInput
-   * @param item
-   * @returns {number}
-   */
+     * function for getting the index of the currentValue inside a value of the values array
+     * @param currentInput
+     * @param item
+     * @returns {number}
+     */
   const indexOfMatch = (currentInput, item) => item
     .label.toLowerCase().indexOf(currentInput.toLowerCase());
   
   /**
-   * index of item in items
-   * @param {*} item
-   * @param {*} items
-   */
+     * index of item in items
+     * @param {*} item
+     * @param {*} items
+     */
   const indexOfItem = (item, items) => items
     .indexOf(items.find(i => i.key === item.key));
   
@@ -112,11 +112,11 @@ import React, {
     }, [currentInput, visible, isMatchingDebounced, initialValue]);
   
     /**
-     * runs the matching process of the current input
-     * and handles debouncing the different callback calls to reduce lag time
-     * for bigger datasets or heavier matching algorithms
-     * @param nextInput
-     */
+       * runs the matching process of the current input
+       * and handles debouncing the different callback calls to reduce lag time
+       * for bigger datasets or heavier matching algorithms
+       * @param nextInput
+       */
     const debouncedMatchingUpdateStep = useCallback((nextInput) => {
       // cleanup waiting update step
       if (inputHappenedTimeout.current) {
@@ -168,9 +168,9 @@ import React, {
       onDropdownOpen, onDropdownClose, visible]);
   
     /**
-     * gets called when someone starts to write in the input field
-     * @param value
-     */
+       * gets called when someone starts to write in the input field
+       * @param value
+       */
     const onHandleInput = useCallback((event) => {
       const { value } = event.target;
       debouncedMatchingUpdateStep(value);
@@ -192,10 +192,10 @@ import React, {
     }, [visible, currentInput, requiredInputLength, initialValue, debouncedMatchingUpdateStep]);
   
     /**
-     * handleSelect is called onClickItem and onEnter upon an option of the drop down menu
-     * does nothing if the key has not changed since the last onSelect event
-     * @param selectedItem
-     */
+       * handleSelect is called onClickItem and onEnter upon an option of the drop down menu
+       * does nothing if the key has not changed since the last onSelect event
+       * @param selectedItem
+       */
     const onHandleSelect = useCallback((selectedItem) => {
       // block select call until last matching went through
       if (isMatchingDebounced) return;
@@ -219,9 +219,9 @@ import React, {
       lastValidItem, isMatchingDebounced, onSelect]);
   
     /**
-     * handle key events
-     * @param event
-     */
+       * handle key events
+       * @param event
+       */
     const onHandleKeydown = useCallback((event) => {
       // only do something if drop-down div is visible
       if (!visible) return;
@@ -252,20 +252,20 @@ import React, {
       const index = indexOfMatch(currentInput, item);
       const inputLength = currentInput.length;
       return (
-        <>
+        <React.Fragment>
           { index >= 0 && inputLength
-          // renders label with matching search string marked
+            // renders label with matching search string marked
             ? (
-              <>
+              <React.Fragment>
                 {item.label.substr(0, index) }
                 <strong>
                   { item.label.substr(index, inputLength) }
                 </strong>
                 { item.label.substr(index + inputLength, item.label.length) }
-              </>
+              </React.Fragment>
             )
             : item.label }
-        </>
+        </React.Fragment>
       );
     }, [currentInput]);
   
