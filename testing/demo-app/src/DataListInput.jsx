@@ -13,7 +13,7 @@ import './DataListInput.css';
  * @returns {boolean}
  */
 const labelMatch = (currentInput, item) => item
-  .label.substr(0, currentInput.length).toUpperCase() === currentInput.toUpperCase();
+  .label.substr(0, currentInput.length).toLowerCase() === currentInput.toLowerCase();
 
 /**
  * function for getting the index of the currentValue inside a value of the values array
@@ -22,7 +22,7 @@ const labelMatch = (currentInput, item) => item
  * @returns {number}
  */
 const indexOfMatch = (currentInput, item) => item
-  .label.toUpperCase().indexOf(currentInput.toUpperCase());
+  .label.toLowerCase().indexOf(currentInput.toLowerCase());
 
 /**
  * index of item in items
@@ -72,37 +72,36 @@ const DataListInput = ({
   const menu = useRef();
   const inputField = useRef();
 
-  const onClickCloseMenu = useCallback((event) => {
-    if (!menu.current) return;
-    // if rerender, items inside might change, allow one click without further checking
-    if (interactionHappened) {
-      setInteractionHappened(false);
-      return;
-    }
-    // do not do anything if input is clicked, as we have a dedicated func for that
-    if (!inputField.current) return;
-    const targetIsInput = event.target === inputField.current;
-    const targetInInput = inputField.current.contains(event.target);
-    if (targetIsInput || targetInInput) return;
-
-    // do not close menu if user clicked inside
-    const targetInMenu = menu.current.contains(event.target);
-    const targetIsMenu = event.target === menu.current;
-    if (targetInMenu || targetIsMenu) return;
-
-    if (visible) {
-      setVisible(false);
-      setFocusIndex(-1);
-      onDropdownClose();
-    }
-  }, [interactionHappened, onDropdownClose]);
-
   useEffect(() => {
+    const onClickCloseMenu = (event) => {
+      if (!menu.current) return;
+      // if rerender, items inside might change, allow one click without further checking
+      if (interactionHappened) {
+        setInteractionHappened(false);
+        return;
+      }
+      // do not do anything if input is clicked, as we have a dedicated func for that
+      if (!inputField.current) return;
+      const targetIsInput = event.target === inputField.current;
+      const targetInInput = inputField.current.contains(event.target);
+      if (targetIsInput || targetInInput) return;
+
+      // do not close menu if user clicked inside
+      const targetInMenu = menu.current.contains(event.target);
+      const targetIsMenu = event.target === menu.current;
+      if (targetInMenu || targetIsMenu) return;
+
+      if (visible) {
+        setVisible(false);
+        setFocusIndex(-1);
+        onDropdownClose();
+      }
+    };
     window.addEventListener('click', onClickCloseMenu, false);
     return () => {
       window.removeEventListener('click', onClickCloseMenu);
     };
-  }, []);
+  }, [interactionHappened, onDropdownClose, visible]);
 
   useEffect(() => {
     // if we have an initialValue, we want to reset it everytime we update and are empty
@@ -111,15 +110,6 @@ const DataListInput = ({
       setCurrentInput(initialValue);
     }
   }, [currentInput, visible, isMatchingDebounced, initialValue]);
-
-  /**
-   * matching process to find matching entries in items array
-   * @returns {Array}
-   */
-  const computeMatchingItems = useCallback(() => items.filter((item) => {
-    if (typeof (match) === typeof (Function)) { return match(currentInput, item); }
-    return labelMatch(currentInput, item);
-  }), [items, match, currentInput]);
 
   /**
    * runs the matching process of the current input
@@ -143,7 +133,11 @@ const DataListInput = ({
     if (!reachedRequiredLength) return;
 
     const updateMatchingItems = () => {
-      const updatedMatchingItems = computeMatchingItems();
+      // matching process to find matching entries in items array
+      const updatedMatchingItems = items.filter((item) => {
+        if (typeof (match) === typeof (Function)) return match(nextInput, item);
+        return labelMatch(nextInput, item);
+      });
       const displayableItems = updatedMatchingItems.slice(0, dropDownLength);
       const showDragIndex = lastValidItem && !clearInputOnSelect;
       const index = showDragIndex ? indexOfItem(lastValidItem, displayableItems) : 0;
@@ -169,7 +163,7 @@ const DataListInput = ({
     } else {
       inputHappenedTimeout.current = setTimeout(updateMatchingItems, debounceTime);
     }
-  }, [requiredInputLength, debounceTime, computeMatchingItems,
+  }, [requiredInputLength, debounceTime, match, items,
     dropDownLength, lastValidItem, clearInputOnSelect,
     onDropdownOpen, onDropdownClose, visible]);
 
@@ -257,7 +251,6 @@ const DataListInput = ({
   const renderItemLabel = useCallback((item) => {
     const index = indexOfMatch(currentInput, item);
     const inputLength = currentInput.length;
-    console.log('renderLabelAgain');
     return (
       <>
         { index >= 0 && inputLength
@@ -278,7 +271,7 @@ const DataListInput = ({
 
   const renderItems = useCallback(() => (
     <div ref={menu} className={`datalist-items ${dropdownClassName || 'default-datalist-items'}`}>
-      {items.map((item, i) => {
+      {matchingItems.map((item, i) => {
         const isActive = focusIndex === i;
         const itemActiveClasses = isActive
           ? `datalist-active-item ${activeItemClassName || 'datalist-active-item-default'}` : '';
@@ -297,7 +290,7 @@ const DataListInput = ({
         );
       })}
     </div>
-  ), [dropdownClassName, items, focusIndex,
+  ), [dropdownClassName, matchingItems, focusIndex,
     activeItemClassName, itemClassName, onHandleSelect, renderItemLabel]);
 
   const renderLoader = useCallback(() => (
