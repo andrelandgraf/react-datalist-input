@@ -20,20 +20,25 @@ class DataListInput extends React.Component {
             visible: false,
             /* index of the currently focused item in the drop down menu */
             focusIndex: 0,
-            /* cleaner click events */
+            /* cleaner click events, click interaction within dropdown menu */
             interactionHappened: false,
+            /* show loader if still matching in debounced mode */
+            isMatchingDebounced: false,
         };
+
+        /* to manage debouncing of matching, typing input into the input field */
+        this.inputHappenedTimeout = undefined;
 
         window.addEventListener( 'click', this.onClickCloseMenu, false );
     }
 
     componentDidUpdate = () => {
-        const { currentInput, visible } = this.state;
+        const { currentInput, visible, isMatchingDebounced } = this.state;
         const { initialValue } = this.props;
 
         // if we have an initialValue, we want to reset it everytime we update and are empty
         // also setting a new initialValue will trigger this
-        if ( !currentInput && initialValue && !visible ) {
+        if ( !currentInput && initialValue && !visible && !isMatchingDebounced ) {
             this.setState( { currentInput: initialValue } );
         }
     }
@@ -73,75 +78,6 @@ class DataListInput extends React.Component {
         }
     }
 
-    onClickInput = () => {
-        const { visible, lastValidItem } = this.state;
-        let { currentInput } = this.state;
-        const {
-            requiredInputLength, dropDownLength, items, match,
-            clearInputOnSelect, initialValue, onDropdownOpen,
-        } = this.props;
-        const reachedRequiredLength = currentInput.length >= requiredInputLength;
-
-        // if user clicks on input field with initialValue,
-        // the user most likely wants to clear the input field
-        if ( initialValue && currentInput === initialValue ) {
-            this.setState( { currentInput: '' } );
-            currentInput = '';
-        }
-
-        if ( reachedRequiredLength && !visible ) {
-            const matchingItems = items.filter( ( item ) => {
-                if ( typeof ( match ) === typeof ( Function ) ) {
-                    return match( currentInput, item );
-                }
-                return this.match( currentInput, item );
-            } );
-
-            const currentInputIsLastItem = !clearInputOnSelect && lastValidItem
-                && lastValidItem.label === currentInput;
-            const displayableItems = matchingItems.length && !currentInputIsLastItem
-                ? matchingItems.slice( 0, dropDownLength ) : items.slice( 0, dropDownLength );
-
-            let index = lastValidItem && !clearInputOnSelect
-                ? this.indexOfItem( lastValidItem, displayableItems ) : 0;
-            index = index > 0 ? index : 0;
-
-            this.setState( { visible: true, matchingItems: displayableItems, focusIndex: index },
-                onDropdownOpen );
-        }
-    }
-
-    /**
-     * gets called when someone starts to write in the input field
-     * @param value
-     */
-    onHandleInput = ( event ) => {
-        const currentInput = event.target.value;
-        const {
-            items, match, dropDownLength, onDropdownOpen, onDropdownClose,
-        } = this.props;
-        const matchingItems = items.filter( ( item ) => {
-            if ( typeof ( match ) === typeof ( Function ) ) { return match( currentInput, item ); }
-            return this.match( currentInput, item );
-        } );
-        const displayableItems = matchingItems.slice( 0, dropDownLength );
-        if ( matchingItems.length > 0 ) {
-            this.setState( {
-                currentInput,
-                matchingItems: displayableItems,
-                focusIndex: 0,
-                visible: true,
-            }, onDropdownOpen );
-        } else {
-            this.setState( {
-                currentInput,
-                matchingItems: displayableItems,
-                visible: false,
-                focusIndex: -1,
-            }, onDropdownClose );
-        }
-    };
-
     /**
      * default function for matching the current input value (needle)
      * and the values of the items array
@@ -153,6 +89,18 @@ class DataListInput extends React.Component {
         .label.substr( 0, currentInput.length ).toUpperCase() === currentInput.toUpperCase();
 
     /**
+     * matching process to find matching entries in items array
+     * @param currentInput
+     * @param item
+     * @param match
+     * @returns {Array}
+     */
+    matching = ( currentInput, items, match ) => items.filter( ( item ) => {
+        if ( typeof ( match ) === typeof ( Function ) ) { return match( currentInput, item ); }
+        return this.match( currentInput, item );
+    } );
+
+    /**
      * function for getting the index of the currentValue inside a value of the values array
      * @param currentInput
      * @param item
@@ -162,6 +110,87 @@ class DataListInput extends React.Component {
         .label.toUpperCase().indexOf( currentInput.toUpperCase() );
 
     indexOfItem = ( item, items ) => items.indexOf( items.find( i => i.key === item.key ) )
+
+    /**
+     * runs the matching process of the current input
+     * and handles debouncing the different callback calls to reduce lag time
+     * for bigger datasets or heavier matching algorithms
+     * @param currentInput
+     */
+    debouncedMatchingUpdateStep = ( currentInput ) => {
+        const { lastValidItem } = this.state;
+        const {
+            items, match, debounceTime, dropDownLength, requiredInputLength,
+            clearInputOnSelect, onDropdownOpen, onDropdownClose,
+        } = this.props;
+        // cleanup waiting update step
+        if ( this.inputHappenedTimeout ) {
+            clearTimeout( this.inputHappenedTimeout );
+        }
+
+        // set currentInput into input field and show loading if debounced mode is on
+        const reachedRequiredLength = currentInput.length >= requiredInputLength;
+        const showMatchingStillLoading = debounceTime >= 0 && reachedRequiredLength;
+        this.setState( { currentInput, isMatchingDebounced: showMatchingStillLoading } );
+
+        // no matching if we do not reach required input length
+        if ( !reachedRequiredLength ) return;
+
+        const updateMatchingItems = () => {
+            const matchingItems = this.matching( currentInput, items, match );
+            const displayableItems = matchingItems.slice( 0, dropDownLength );
+            const showDragIndex = lastValidItem && !clearInputOnSelect;
+            const index = showDragIndex ? this.indexOfItem( lastValidItem, displayableItems ) : 0;
+            if ( matchingItems.length > 0 ) {
+                this.setState( {
+                    matchingItems: displayableItems,
+                    focusIndex: index > 0 ? index : 0,
+                    visible: true,
+                    isMatchingDebounced: false,
+                }, onDropdownOpen );
+            } else {
+                this.setState( {
+                    matchingItems: displayableItems,
+                    visible: false,
+                    focusIndex: -1,
+                    isMatchingDebounced: false,
+                }, onDropdownClose );
+            }
+        };
+
+        if ( debounceTime <= 0 ) {
+            updateMatchingItems();
+        } else {
+            this.inputHappenedTimeout = setTimeout( updateMatchingItems, debounceTime );
+        }
+    }
+
+    /**
+     * gets called when someone starts to write in the input field
+     * @param value
+     */
+    onHandleInput = ( event ) => {
+        const currentInput = event.target.value;
+        this.debouncedMatchingUpdateStep( currentInput );
+    };
+
+    onClickInput = () => {
+        const { visible } = this.state;
+        let { currentInput } = this.state;
+        const { requiredInputLength, initialValue } = this.props;
+
+        // if user clicks on input field with initialValue,
+        // the user most likely wants to clear the input field
+        if ( initialValue && currentInput === initialValue ) {
+            this.setState( { currentInput: '' } );
+            currentInput = '';
+        }
+
+        const reachedRequiredLength = currentInput.length >= requiredInputLength;
+        if ( reachedRequiredLength && !visible ) {
+            this.debouncedMatchingUpdateStep( currentInput );
+        }
+    }
 
     /**
      * handle key events
@@ -226,7 +255,9 @@ class DataListInput extends React.Component {
      */
     onSelect = ( selectedItem ) => {
         const { suppressReselect, clearInputOnSelect, onDropdownClose } = this.props;
-        const { lastValidItem } = this.state;
+        const { lastValidItem, isMatchingDebounced } = this.state;
+        // block select call until last matching went through
+        if ( isMatchingDebounced ) return;
         if ( suppressReselect && lastValidItem && selectedItem.key === lastValidItem.key ) {
             // do not trigger the callback function
             // but still change state to fit new selection
@@ -297,6 +328,12 @@ class DataListInput extends React.Component {
         </div>
     );
 
+    renderLoader = ( debounceLoader, dropdownClassName, itemClassName ) => (
+        <div className={`datalist-items ${ dropdownClassName || 'default-datalist-items' }`}>
+            <div className={itemClassName}>{debounceLoader || 'loading...'}</div>
+        </div>
+    )
+
     renderInputField = ( placeholder, currentInput, inputClassName ) => (
         <input
             onChange={this.onHandleInput}
@@ -311,20 +348,26 @@ class DataListInput extends React.Component {
 
     render() {
         const {
-            currentInput, matchingItems, focusIndex, visible,
+            currentInput, matchingItems, focusIndex, visible, isMatchingDebounced,
         } = this.state;
         const {
-            placeholder, inputClassName, activeItemClassName,
-            itemClassName, requiredInputLength, dropdownClassName,
+            placeholder, inputClassName, activeItemClassName, itemClassName,
+            requiredInputLength, dropdownClassName, debounceLoader,
         } = this.props;
+
         const reachedRequiredLength = currentInput.length >= requiredInputLength;
+
+        let renderedResults;
+        if ( reachedRequiredLength && isMatchingDebounced ) {
+            renderedResults = this.renderLoader( debounceLoader, itemClassName, dropdownClassName );
+        } else if ( reachedRequiredLength && visible ) {
+            renderedResults = this.renderItems( currentInput, matchingItems, focusIndex,
+                activeItemClassName, itemClassName, dropdownClassName );
+        }
         return (
             <div className="datalist-input">
                 { this.renderInputField( placeholder, currentInput, inputClassName ) }
-                { reachedRequiredLength && visible
-                    && this.renderItems( currentInput, matchingItems, focusIndex,
-                        activeItemClassName, itemClassName, dropdownClassName )
-                }
+                { renderedResults }
             </div>
         );
     }
@@ -354,6 +397,8 @@ DataListInput.propTypes = {
     suppressReselect: PropTypes.bool,
     dropDownLength: PropTypes.number,
     initialValue: PropTypes.string,
+    debounceTime: PropTypes.number,
+    debounceLoader: PropTypes.node,
 };
 
 DataListInput.defaultProps = {
@@ -368,6 +413,8 @@ DataListInput.defaultProps = {
     suppressReselect: true,
     dropDownLength: Infinity,
     initialValue: '',
+    debounceTime: 0,
+    debounceLoader: undefined,
     onDropdownOpen: () => {},
     onDropdownClose: () => {},
 };

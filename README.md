@@ -112,7 +112,7 @@ match = (currentInput, item) => {
 ***onDropdownClose***
 
 - The callback function that will be called after closing the drop down menu.
-    
+
 ***placeholder***
 
 - The placeholder that will be shown inside the input field.
@@ -167,8 +167,26 @@ match = (currentInput, item) => {
 
 ***initialValue***
 
-- Specigy an initial value for the input field.
+- Specify an initial value for the input field.
 - For example, `initialValue={'hello world'}` will print `hello world` into the input field on first render.
 - Default is empty string.
+
+***debounceTime***
+
+- Use `debounceTime` to define a debounce timeout time (in milliseconds) before the matching algorithm should be called
+- New user input will trigger a new call to the debounce step and will clear every unresolved timeout
+- For example, `debounceTime={1000}` will call the matching algorithm one second after the last user input
+- This is useful if `items` is very large and/or the `match`-algorithm is doing some heavier operations
+- `debounceTime` may improve the user experience by reducing lag times as it reduces the calls to the matching and rendering of the dropdown.
+- Be careful, using too much debounceTime will slow down the response time of this component.
+- If you still have performance issues even when using a `debounceTime={3000}` or higher, you might want to consider using another package / user input instead. Think about a "search/look-up"-button next to your input field or even consider running the search functionality in a dedicated backend.
+- Default is zero which means no timeout/debouncing is used.
+
+
+***debounceLoader***
+
+- Only in use if debounceTime is set
+- Of type node which can be anything that react can render and will be shown as a loading bar
+- Default is string "loading...".
 
 
