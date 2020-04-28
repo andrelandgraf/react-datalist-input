@@ -172,6 +172,7 @@ class DataListInput extends React.Component {
     onHandleInput = ( event ) => {
         const currentInput = event.target.value;
         this.debouncedMatchingUpdateStep( currentInput );
+        this.props.onInput(currentInput);
     };
 
     onClickInput = () => {
@@ -399,6 +400,7 @@ DataListInput.propTypes = {
     initialValue: PropTypes.string,
     debounceTime: PropTypes.number,
     debounceLoader: PropTypes.node,
+    onInput: PropTypes.func,
 };
 
 DataListInput.defaultProps = {
@@ -417,6 +419,7 @@ DataListInput.defaultProps = {
     debounceLoader: undefined,
     onDropdownOpen: () => {},
     onDropdownClose: () => {},
+    onInput: () => {},
 };
 
 export default DataListInput;
