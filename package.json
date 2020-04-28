@@ -1,6 +1,6 @@
 {
   "name": "react-datalist-input",
-  "version": "1.2.14",
+  "version": "1.2.15",
   "description": "This package provides a react component as follows: an input field with a drop down menu to pick a possible option based on the current input.",
   "main": "./lib/DataListInput.js",
   "license": "MIT",
@@ -33,14 +33,14 @@
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.16.0",
     "babel-preset-stage-0": "^6.24.1",
-    "css-loader": "^3.0.0",
+    "css-loader": "^3.5.3",
     "path": "^0.12.7",
     "prop-types": "^15.7.2",
-    "react": "^16.0.0",
-    "react-dom": "^16.0.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
     "style-loader": "^0.23.1",
-    "webpack": "^4.5.0",
-    "webpack-cli": "^3.2.1"
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11"
   },
   "peerDependencies": {
     "prop-types": "^15.6.0",
