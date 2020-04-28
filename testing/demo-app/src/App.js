@@ -58,19 +58,19 @@ function annoyinglySlowMatchingAlg(currentInput, item) {
 
 function App() {
   const [item, setItem] = useState();
-  const [items, setItems] = useState(data);
+  const [items, setItems] = useState([]);
 
-  //   useEffect(() => {
-  //     getAndParseData(csvFile).then(obj => setItems(obj
-  //       .concat(obj)
-  //       .map((row, i) => (
-  //         {
-  //           ...row,
-  //           label: row.vorname,
-  //           key: i,
-  //         }
-  //       ))));
-  //   }, []);
+  useEffect(() => {
+    getAndParseData(csvFile).then(obj => setItems(obj
+      .concat(obj)
+      .map((row, i) => (
+        {
+          ...row,
+          label: row.vorname,
+          key: i,
+        }
+      ))));
+  }, []);
 
   return (
     <div className="App">
@@ -87,8 +87,8 @@ function App() {
             items={items}
             onSelect={i => setItem(i)}
             placeholder="Select a ingredient"
-            clearInputOnSelect
-            suppressReselect={false}
+            clearInputOnSelect={false}
+            suppressReselect
             initialValue={item ? item.label : ''}
             // debounceTime={1000}
             // debounceLoader={<>Hello</>}
