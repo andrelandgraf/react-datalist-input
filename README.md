@@ -8,6 +8,10 @@ Have a look at [w3schools.com](https://www.w3schools.com/howto/howto_js_autocomp
 
 For more information about react and the ecosystem see this [guide](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md).
 
+## Demo
+
+Check it out on my [personal website](https://andre-landgraf.cool)!
+
 ## Feedback
 
 Feel free to get inspired and more importantly please provide [your feedback](https://github.com/andrelandgraf/react-datalist-input/issues) on structure and style. I'm more than happy to learn how to improve my code and architecture.
