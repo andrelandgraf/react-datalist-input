@@ -28,7 +28,9 @@ class DataListInput extends React.Component {
 
         /* to manage debouncing of matching, typing input into the input field */
         this.inputHappenedTimeout = undefined;
+    }
 
+    componentDidMount = () => {
         window.addEventListener( 'click', this.onClickCloseMenu, false );
     }
 
