@@ -25,6 +25,7 @@ declare module 'react-datalist-input' {
         onDropdownClose?: () => void;
         debounceTime?: number;
         debounceLoader?: React.ReactNode;
+        onInput?: (inputValue: string) => void;
     }
 
     export default class DataListInput extends React.Component<DataListInputProperties> {
