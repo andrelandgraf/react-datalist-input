@@ -170,6 +170,8 @@ match = (currentInput, item) => {
 - Specify an initial value for the input field.
 - For example, `initialValue={'hello world'}` will print `hello world` into the input field on first render.
 - Default is empty string.
+- Caution: Don't confuse this with a placeholder (see placerholder prop), this is an actual value in the input
+and supports uses cases like saving user state or suggesting a search value.
 
 ***debounceTime***
 
@@ -188,5 +190,10 @@ match = (currentInput, item) => {
 - Only in use if debounceTime is set
 - Of type node which can be anything that react can render and will be shown as a loading bar
 - Default is string "loading...".
+
+***onInput***
+
+- The callback function that will be called whenever the user types into the input field
+- Exposing this function supports use cases like resetting states on empty input field
 
 
