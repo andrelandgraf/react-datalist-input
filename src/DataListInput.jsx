@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 
 import './DataListInput.css';
 
+const windowExists = () => typeof window !== 'undefined';
+
 class DataListInput extends React.Component {
     constructor( props ) {
         super( props );
@@ -31,7 +33,9 @@ class DataListInput extends React.Component {
     }
 
     componentDidMount = () => {
-        window.addEventListener( 'click', this.onClickCloseMenu, false );
+        if ( windowExists() ) {
+            window.addEventListener( 'click', this.onClickCloseMenu, false );
+        }
     }
 
     componentDidUpdate = () => {
@@ -46,7 +50,9 @@ class DataListInput extends React.Component {
     }
 
     componentWillUnmount = () => {
-        window.removeEventListener( 'click', this.onClickCloseMenu );
+        if ( windowExists() ) {
+            window.removeEventListener( 'click', this.onClickCloseMenu );
+        }
     }
 
     onClickCloseMenu = ( event ) => {
@@ -172,9 +178,10 @@ class DataListInput extends React.Component {
      * @param value
      */
     onHandleInput = ( event ) => {
+        const { onInput } = this.props;
         const currentInput = event.target.value;
         this.debouncedMatchingUpdateStep( currentInput );
-        this.props.onInput(currentInput);
+        onInput( currentInput );
     };
 
     onClickInput = () => {
