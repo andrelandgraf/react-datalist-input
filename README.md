@@ -10,29 +10,30 @@ For more information about react and the ecosystem see this [guide](https://gith
 
 ## Demo
 
-Check it out on my [personal website](https://andre-landgraf.cool)!
+Check it out on [my personal website](https://andre-landgraf.cool/uses)!
 
 ## Feedback
 
-Feel free to get inspired and more importantly please provide [your feedback](https://github.com/andrelandgraf/react-datalist-input/issues) on structure and style. I'm more than happy to learn how to improve my code and architecture.
+Feel free to get inspired and more importantly please provide [your feedback](https://github.com/andrelandgraf/react-datalist-input/issues) on structure and style.
 
 ## Installation
 
-**Installation via npm**
+### Installation via npm
 
 ```
 npm install react-datalist-input --save
 ```
 
-***Basic Usage***
+### Basic Usage
 
 ```
 import DataListInput from 'react-datalist-input';
 
 /**
- * create your own match algorithm if you want to do so
- * @param currentInput String (the current user input)
- * @param item (one item of the items array)
+ * OPTIONAL, this packages comes with a simple default label matching function
+ * but feel free to create your own match algorithm if you want to do so
+ * @param {String} currentInput (the current user input)
+ * @param {object} item (one item of the items array)
  * @returns {boolean}
  */
 matchCurrentInput = (currentInput, item) => {
@@ -52,28 +53,55 @@ onSelect = (selectedItem) => {
 render() {
     // the array you want to pass to the react-data-list component
     // each element at least needs a key and a label
-    const items = this.props.values.map((item, i) => {
+    const items = myValues.map((item, i) => {
         return {
             // what to show to the user
             label: item.id  + ": " + item.name,
             // key to identify the item within the array
             key: item.id,
-            // feel free to add your own app logic to access those properties later on
+            // feel free to add your own app logic to access those properties in the onSelect function
             someAdditionalValue: item.someAdditionalValue,
+            // or just keep everything
+            ...item,
         }
     });
 
     return(
         <div>
-            <DataListInput placeholder={"Select an option from the drop down menu..."}
-                          items={items} onSelect={this.onSelect} match={this.matchCurrentInput}/>
+            <DataListInput 
+                placeholder={"Select an option from the drop down menu..."}
+                items={items}
+                onSelect={this.onSelect}
+                match={this.matchCurrentInput}
+            />
         </div>
 );
 ```
 
 ## Properties
 
-***items***
+| Prop     |      Type      |  Required/Optional | Default Value
+|----------|-------------   |------| ------|
+| [items](#markdown-header-items) |  array  | required | - |
+| [onSelect](#markdown-header-onSelect) |    function    |   required | -  |
+| [match](#markdown-header-match) | function  |  optional | required | -  |
+| [onDropdownOpen](#markdown-header-onDropdownOpen) | function  |  optional | -  |
+| [onDropdownClose](#markdown-header-onDropdownClose) | function  |  optional | -  |
+| [placeholder](#markdown-header-placeholder) | string  |  optional | ''  |
+| [itemClassName](#markdown-header-itemClassName) | string  |  optional |  -  |
+| [activeItemClassName](#markdown-header-activeItemClassName) | string  |  optional |  -  |
+| [inputClassName](#markdown-header-inputClassName) | string  |  optional  | -  |
+| [dropdownClassName](#markdown-header-dropdownClassName) | string  |  optional  | -  |
+| [requiredInputLength](#markdown-header-requiredInputLength) | number  |  optional  | 0  |
+| [clearInputOnSelect](#markdown-header-clearInputOnSelect) | boolean  |  optional  | false  |
+| [suppressReselect](#markdown-header-suppressReselect) | boolean  |  optional  | true  |
+| [dropDownLength](#markdown-header-dropDownLength) | number  |  optional  | infinite  |
+| [initialValue](#markdown-header-initialValue) | string  |  optional  | -  |
+| [debounceTime](#markdown-header-debounceTime) | number  |  optional  |  0  |
+| [debounceLoader](#markdown-header-debounceLoader) | string  |  optional  | 'Loading...'  |
+| [onInput](#markdown-header-onInput) | function  |  optional   | -  |
+
+### <a name="markdown-header-items"></a>items
 
 - <b>Required</b> property!
 - The array of options for the drop down menu.<br>
@@ -81,7 +109,7 @@ render() {
     - key : an id that identifies the item within the array
     - label: the label that will be shown in the drop down menu
 
-***onSelect***
+### <a name="markdown-header-onSelect"></a>onSelect
 
 - <b>Required</b> property!
 - The callback function that will be called if the user selects one item of the drop down menu.
@@ -89,7 +117,7 @@ render() {
 - Parameter: (selectedKey)
     - selectedKey: the Key Property of the item that the user selected
 
-***match***
+### <a name="markdown-header-match"></a>match
 
 - Pass a match function as stated above for creating your own matching algorithm for the autocomplete functionality.
 - Parameter: (currentInput, item)
@@ -109,67 +137,67 @@ match = (currentInput, item) => {
 };
 ```
 
-***onDropdownOpen***
+### <a name="markdown-header-onDropdownOpen"></a>onDropdownOpen
 
 - The callback function that will be called after opening the drop down menu.
 
-***onDropdownClose***
+### <a name="markdown-header-onDropdownClose"></a>onDropdownClose
 
 - The callback function that will be called after closing the drop down menu.
 
-***placeholder***
+### <a name="markdown-header-placeholder"></a>placeholder
 
 - The placeholder that will be shown inside the input field.
 - Default is an empty string
 
-***itemClassName***
+### <a name="markdown-header-itemClassName"></a>itemClassName
 
 - Additional classes to style each input field in the dropdown menu.
 - Default is an empty string
 - Removes the default styling if set
 
-***activeItemClassName***
+### <a name="markdown-header-activeItemClassName"></a>activeItemClassName
 
 - Additional classes to style the active input field.
 - Default is an empty string
 - Removes the default styling if set
 
-***inputClassName***
+### <a name="markdown-header-inputClassName"></a>inputClassName
 
 - Additional classes to style the input field.
 - Default is an empty string
 - Removes the default styling if set
 
-***dropdownClassName***
+### <a name="markdown-header-dropdownClassName"></a>dropdownClassName
 
 - Additional classes to style the dropdown box.
 - Default is an empty string
 - Adds on the required styling (e.g. position:absolute)
 - Removes the default styling if set
 
-***requiredInputLength***
+### <a name="markdown-header-requiredInputLength"></a>requiredInputLength
 
 - Number to specify the threshold until when the dropdown menu should appear.
 - Example `requiredInputLength=3`, only if the user input is longer than 2 characters, the dropdown menu will appear.
 - Default is zero.
 
-***clearInputOnSelect***
+### <a name="markdown-header-clearInputOnSelect"></a>clearInputOnSelect
 
 - Should the input field be cleared on select on filled with selected item?
 - Default is false.
 
-***suppressReselect***
+### <a name="markdown-header-suppressReselect"></a>suppressReselect
 
 - If suppressReselect is set to false, selecting the same item again, it will trigger another onSelect callback call.
 - Default is true.
 
-***dropDownLength***
+### <a name="markdown-header-dropDownLength"></a>dropDownLength
 
 - Only display the first `dropDownLength` matches in the dropdown. Useful if the array is really big.
 - Number to specify max length of drop down.
 - Default is Infinity.
 
-***initialValue***
+### <a name="markdown-header-initialValue"></a>initialValue
 
 - Specify an initial value for the input field.
 - For example, `initialValue={'hello world'}` will print `hello world` into the input field on first render.
@@ -177,7 +205,7 @@ match = (currentInput, item) => {
 - Caution: Don't confuse this with a placeholder (see placerholder prop), this is an actual value in the input
 and supports uses cases like saving user state or suggesting a search value.
 
-***debounceTime***
+### <a name="markdown-header-debounceTime"></a>debounceTime
 
 - Use `debounceTime` to define a debounce timeout time (in milliseconds) before the matching algorithm should be called
 - New user input will trigger a new call to the debounce step and will clear every unresolved timeout
@@ -189,13 +217,13 @@ and supports uses cases like saving user state or suggesting a search value.
 - Default is zero which means no timeout/debouncing is used.
 
 
-***debounceLoader***
+### <a name="markdown-header-debounceLoader"></a>debounceLoader
 
 - Only in use if debounceTime is set
 - Of type node which can be anything that react can render and will be shown as a loading bar
 - Default is string "loading...".
 
-***onInput***
+### <a name="markdown-header-onInput"></a>onInput
 
 - The callback function that will be called whenever the user types into the input field
 - Exposing this function supports use cases like resetting states on empty input field
