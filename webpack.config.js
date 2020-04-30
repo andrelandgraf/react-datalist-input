@@ -1,12 +1,15 @@
 var path = require('path');
 
 module.exports = {
+    target: 'node',
     mode: 'production',
     entry: './src/DataListInput.jsx',
     output: {
         path: path.resolve('lib'),
+        library: 'DataListInput',
+        libraryTarget: 'umd', //libraryTarget: 'commonjs2'
         filename: 'DataListInput.js',
-        libraryTarget: 'commonjs2'
+        globalObject: 'this'
     },
     module: {
         rules: [
