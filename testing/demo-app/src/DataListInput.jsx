@@ -3,7 +3,6 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 
-import safeWindow from './safeWindow';
 import './DataListInput.css';
 
 /**
@@ -98,9 +97,9 @@ const DataListInput = ({
         onDropdownClose();
       }
     };
-    safeWindow.addEventListener('click', onClickCloseMenu, false);
+    window.addEventListener('click', onClickCloseMenu, false);
     return () => {
-      safeWindow.removeEventListener('click', onClickCloseMenu);
+      window.removeEventListener('click', onClickCloseMenu);
     };
   }, [interactionHappened, onDropdownClose, visible]);
 
