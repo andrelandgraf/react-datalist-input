@@ -129,9 +129,10 @@ class DataListInput extends React.Component {
         items, match, debounceTime, dropDownLength, requiredInputLength,
         clearInputOnSelect, onDropdownOpen, onDropdownClose,
       } = this.props;
-        // cleanup waiting update step
-      if (this.inputHappenedTimeout) {
-        clearTimeout(this.inputHappenedTimeout);
+        // cleanup waiting update step && be ssr safe
+      if (this.inputHappenedTimeout && typeof window !== 'undefined') {
+        window.clearTimeout(this.inputHappenedTimeout);
+        this.inputHappenedTimeout = null;
       }
 
       // set currentInput into input field and show loading if debounced mode is on
@@ -167,7 +168,9 @@ class DataListInput extends React.Component {
       if (debounceTime <= 0) {
         updateMatchingItems();
       } else {
-        this.inputHappenedTimeout = setTimeout(updateMatchingItems, debounceTime);
+        if (typeof window !== 'undefined') {
+            this.inputHappenedTimeout = window.setTimeout(updateMatchingItems, debounceTime);
+        }
       }
     }
 
