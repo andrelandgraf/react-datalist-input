@@ -1,9 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import safeWindow from './safeWindow';
 import './DataListInput.css';
-
-const windowExists = () => typeof window !== 'undefined';
 
 class DataListInput extends React.Component {
     constructor( props ) {
@@ -33,9 +32,7 @@ class DataListInput extends React.Component {
     }
 
     componentDidMount = () => {
-        if ( windowExists() ) {
-            window.addEventListener( 'click', this.onClickCloseMenu, false );
-        }
+        safeWindow.addEventListener( 'click', this.onClickCloseMenu, false );
     }
 
     componentDidUpdate = () => {
@@ -50,9 +47,7 @@ class DataListInput extends React.Component {
     }
 
     componentWillUnmount = () => {
-        if ( windowExists() ) {
-            window.removeEventListener( 'click', this.onClickCloseMenu );
-        }
+        safeWindow.removeEventListener( 'click', this.onClickCloseMenu );
     }
 
     onClickCloseMenu = ( event ) => {
