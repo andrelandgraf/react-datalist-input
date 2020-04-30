@@ -90,8 +90,8 @@ function App() {
             clearInputOnSelect={false}
             suppressReselect
             initialValue={item ? item.label : ''}
-            // debounceTime={1000}
-            // debounceLoader={<>Hello</>}
+            debounceTime={1000}
+            debounceLoader={<>Hello</>}
           />
         </div>
       </div>
