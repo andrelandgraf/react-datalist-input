@@ -30,5 +30,9 @@ module.exports = {
             }
         ]
     },
+    externals: {
+        react: 'umd react',
+        'react-dom' : 'umd react-dom'
+    }
 }
 
