@@ -1,12 +1,8 @@
 ## Info
 
-This package provides a single react component.
+This package provides a single react component.The component contains an input field with a drop down menu to pick a possible option based on the current input as a react component.
 
-The component contains an input field with a drop down menu to pick a possible option based on the current input as a react component.
-
-Have a look at [w3schools.com](https://www.w3schools.com/howto/howto_js_autocomplete.asp) to see how you can do something similar with pure html, css, and js.
-
-For more information about react and the ecosystem see this [guide](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md).
+Have a look at [w3schools.com](https://www.w3schools.com/howto/howto_js_autocomplete.asp) to see how you can do something similar with pure html, css, and js. For more information about react and the ecosystem see this [guide](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md).
 
 ## Demo
 
