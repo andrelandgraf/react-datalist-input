@@ -1,6 +1,6 @@
 ## Info
 
-This package provides a single react component.The component contains an input field with a drop down menu to pick a possible option based on the current input as a react component.
+This package provides a single react component. The component contains an input field with a drop down menu to pick a possible option based on the current input as a react component.
 
 Have a look at [w3schools.com](https://www.w3schools.com/howto/howto_js_autocomplete.asp) to see how you can do something similar with pure html, css, and js. For more information about react and the ecosystem see this [guide](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md).
 
@@ -11,6 +11,12 @@ Check it out on [my personal website](https://andre-landgraf.cool/uses)!
 ## Feedback
 
 Feel free to get inspired and more importantly please provide [your feedback](https://github.com/andrelandgraf/react-datalist-input/issues) on structure and style.
+
+### Using Gatsby or Next.js? 
+
+This component is not compatible with server-side rendering since it has css bundled with it.
+
+I created a plain version of this package without css. Find more information [here](https://www.npmjs.com/package/plain-react-datalist-input).
 
 ## Installation
 
