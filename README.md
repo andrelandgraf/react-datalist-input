@@ -16,7 +16,7 @@ Feel free to get inspired and more importantly please provide [your feedback](ht
 
 This component is not compatible with server-side rendering since it has css bundled with it.
 
-I created a plain version of this package without css. Find more information [here](https://www.npmjs.com/package/plain-react-datalist-input).
+I created a plain version of this package without css. Find more information [here](https://www.npmjs.com/package/react-plain-datalist-input).
 
 ## Installation
 
