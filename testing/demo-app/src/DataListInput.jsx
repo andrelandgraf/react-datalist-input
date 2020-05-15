@@ -3,6 +3,8 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 
+import useStateRef from './useStateRef';
+
 import './DataListInput.css';
 
 /**
@@ -55,15 +57,15 @@ const DataListInput = ({
   /*  last valid item that was selected from the drop down menu */
   const [lastValidItem, setLastValidItem] = useState();
   /* current input text */
-  const [currentInput, setCurrentInput] = useState(initialValue);
+  const [currentInput, setCurrentInput, currentInputRef] = useStateRef(initialValue);
   /* current set of matching items */
   const [matchingItems, setMatchingItems] = useState([]);
   /* visibility property of the drop down menu */
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible, visibleRef] = useStateRef(false);
   /* index of the currently focused item in the drop down menu */
   const [focusIndex, setFocusIndex] = useState(0);
   /* cleaner click events, click interaction within dropdown menu */
-  const [interactionHappened, setInteractionHappened] = useState(false);
+  const interactionHappenedRef = useRef(false);
   /* show loader if still matching in debounced mode */
   const [isMatchingDebounced, setIsMatchingDebounced] = useState(false);
 
@@ -76,8 +78,8 @@ const DataListInput = ({
     const onClickCloseMenu = (event) => {
       if (!menu.current) return;
       // if rerender, items inside might change, allow one click without further checking
-      if (interactionHappened) {
-        setInteractionHappened(false);
+      if (interactionHappenedRef.current) {
+        interactionHappenedRef.current = false;
         return;
       }
       // do not do anything if input is clicked, as we have a dedicated func for that
@@ -91,17 +93,18 @@ const DataListInput = ({
       const targetIsMenu = event.target === menu.current;
       if (targetInMenu || targetIsMenu) return;
 
-      if (visible) {
+      if (visibleRef.current) {
         setVisible(false);
         setFocusIndex(-1);
         onDropdownClose();
       }
     };
     window.addEventListener('click', onClickCloseMenu, false);
+    console.log('added event listener');
     return () => {
       window.removeEventListener('click', onClickCloseMenu);
     };
-  }, [interactionHappened, onDropdownClose, visible]);
+  }, [onDropdownClose]);
 
   useEffect(() => {
     // if we have an initialValue, we want to reset it everytime we update and are empty
@@ -148,7 +151,7 @@ const DataListInput = ({
         setVisible(true);
         onDropdownOpen();
       } else {
-        if (visible) {
+        if (visibleRef.current) {
           setVisible(false);
           onDropdownClose();
         }
@@ -165,7 +168,7 @@ const DataListInput = ({
     }
   }, [requiredInputLength, debounceTime, match, items,
     dropDownLength, lastValidItem, clearInputOnSelect,
-    onDropdownOpen, onDropdownClose, visible]);
+    onDropdownOpen, onDropdownClose]);
 
   /**
      * gets called when someone starts to write in the input field
@@ -178,18 +181,18 @@ const DataListInput = ({
   }, [debouncedMatchingUpdateStep, onInput]);
 
   const onClickInput = useCallback(() => {
-    let value = currentInput;
+    let value = currentInputRef.current;
     // if user clicks on input field with initialValue,
     // the user most likely wants to clear the input field
-    if (initialValue && currentInput === initialValue) {
+    if (initialValue && value === initialValue) {
       value = '';
     }
 
     const reachedRequiredLength = value.length >= requiredInputLength;
-    if (reachedRequiredLength && !visible) {
+    if (reachedRequiredLength && !visibleRef.current) {
       debouncedMatchingUpdateStep(value);
     }
-  }, [visible, currentInput, requiredInputLength, initialValue, debouncedMatchingUpdateStep]);
+  }, [requiredInputLength, initialValue, debouncedMatchingUpdateStep]);
 
   /**
      * handleSelect is called onClickItem and onEnter upon an option of the drop down menu
@@ -203,7 +206,7 @@ const DataListInput = ({
     setCurrentInput(clearInputOnSelect ? '' : selectedItem.label);
     setVisible(false);
     setFocusIndex(-1);
-    setInteractionHappened(true);
+    interactionHappenedRef.current = true;
     onDropdownClose();
 
     if (suppressReselect && lastValidItem && selectedItem.key === lastValidItem.key) {
@@ -224,7 +227,7 @@ const DataListInput = ({
      */
   const onHandleKeydown = useCallback((event) => {
     // only do something if drop-down div is visible
-    if (!visible) return;
+    if (!visibleRef.current) return;
     let currentFocusIndex = focusIndex;
     if (event.keyCode === 40 || event.keyCode === 9) {
       // If the arrow DOWN key or tab is pressed increase the currentFocus variable:
@@ -246,7 +249,7 @@ const DataListInput = ({
         onHandleSelect(selectedItem);
       }
     }
-  }, [visible, focusIndex, matchingItems, onHandleSelect]);
+  }, [focusIndex, matchingItems, onHandleSelect]);
 
   const renderItemLabel = useCallback((item) => {
     const index = indexOfMatch(currentInput, item);
@@ -300,7 +303,7 @@ const DataListInput = ({
   ), [dropdownClassName, itemClassName, debounceLoader]);
 
   const dropDown = useMemo(() => {
-    const reachedRequiredLength = currentInput.length >= requiredInputLength;
+    const reachedRequiredLength = currentInputRef.current.length >= requiredInputLength;
     if (reachedRequiredLength && isMatchingDebounced) {
       return renderLoader();
     }
@@ -308,7 +311,7 @@ const DataListInput = ({
       return renderItems();
     }
     return undefined;
-  }, [currentInput, requiredInputLength, isMatchingDebounced, renderItems, renderLoader, visible]);
+  }, [requiredInputLength, isMatchingDebounced, renderItems, renderLoader, visible]);
 
 
   return (
