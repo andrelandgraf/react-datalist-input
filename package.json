@@ -1,8 +1,9 @@
 {
   "name": "react-datalist-input",
-  "version": "1.3.11",
+  "version": "1.3.12",
   "description": "This package provides a react component as follows: an input field with a drop down menu to pick a possible option based on the current input.",
-  "main": "./lib/DataListInput.js",
+  "main": "./dist/DataListInput.js",
+  "files": ["dist"],
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -28,17 +29,25 @@
     "input"
   ],
   "devDependencies": {
-    "babel-core": "^6.21.0",
-    "babel-loader": "^7.1.4",
-    "babel-preset-env": "^1.6.1",
-    "babel-preset-react": "^6.16.0",
-    "babel-preset-stage-0": "^6.24.1",
-    "css-loader": "^3.5.3",
-    "path": "^0.12.7",
+    "@babel/cli": "^7.10.1",
+    "@babel/core": "^7.10.2",
+    "@babel/plugin-proposal-class-properties": "^7.10.1",
+    "@babel/preset-env": "^7.10.2",
+    "@babel/preset-react": "^7.10.1",
+    "@testing-library/jest-dom": "^5.10.1",
+    "@testing-library/react": "^10.2.1",
+    "eslint": "^7.2.0",
+    "eslint-config-airbnb": "^18.1.0",
+    "eslint-plugin-import": "^2.21.2",
+    "eslint-plugin-jest-dom": "^3.0.1",
+    "jest": "^26.0.1",
     "prop-types": "^15.7.2",
-    "style-loader": "^0.23.1",
-    "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.11"
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "rollup": "^2.16.1",
+    "rollup-plugin-babel": "^4.4.0",
+    "rollup-plugin-jsx": "^1.0.3",
+    "rollup-plugin-sass": "^1.2.2"
   },
   "peerDependencies": {
     "prop-types": "^15.6.0",
@@ -46,6 +55,16 @@
     "react-dom": "^16.0.0"
   },
   "scripts": {
-    "build": "webpack --mode production"
+    "test": "jest",
+    "build": "rollup -c",
+    "start": "rollup -c -w"
+  },
+  "jest": {
+    "modulePathIgnorePatterns": [
+      "<rootDir>/tests/demo-app"
+    ],
+    "moduleNameMapper": {
+      "\\.(css|scss)$": "<rootDir>/tests/unit/styleMock.js"
+    }
   }
 }
