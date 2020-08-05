@@ -22,7 +22,7 @@ I created a plain version of this package without css. Find more information [he
 
 ### Installation via npm
 
-```
+```bash
 npm install react-datalist-input --save
 ```
 
@@ -127,7 +127,7 @@ render() {
     - item: Object, the item of the items array (with key and label properties)
 
 - Default:
-```
+```javascript
 /**
  * default function for matching the current input value (needle) and the values of the items array
  * @param currentInput String (the current user input)
