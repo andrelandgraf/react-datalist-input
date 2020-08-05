@@ -28,7 +28,7 @@ npm install react-datalist-input --save
 
 ### Basic Usage
 
-```
+```javascript
 import DataListInput from 'react-datalist-input';
 
 /**
@@ -86,7 +86,7 @@ render() {
 |----------|-------------   |------| ------|
 | [items](#markdown-header-items) |  array  | required | - |
 | [onSelect](#markdown-header-onSelect) |    function    |   required | -  |
-| [match](#markdown-header-match) | function  |  optional | required | -  |
+| [match](#markdown-header-match) | function  |  optional | internal matching function |
 | [onDropdownOpen](#markdown-header-onDropdownOpen) | function  |  optional | -  |
 | [onDropdownClose](#markdown-header-onDropdownClose) | function  |  optional | -  |
 | [placeholder](#markdown-header-placeholder) | string  |  optional | ''  |
