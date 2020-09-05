@@ -1,398 +1,441 @@
-import React from 'react';
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useMemo,
+} from 'react';
 import PropTypes from 'prop-types';
+
+import useStateRef from './useStateRef';
 
 import './DataListInput.scss';
 
-class DataListInput extends React.Component {
-  constructor(props) {
-    super(props);
+/**
+ * default function for matching the current input value (needle)
+ * and the values of the items array
+ * @param currentInput
+ * @param item
+ * @returns {boolean}
+ */
+const labelMatch = (currentInput, item) =>
+  item.label.substr(0, currentInput.length).toLowerCase() ===
+  currentInput.toLowerCase();
 
-    const { initialValue } = this.props;
+/**
+ * function for getting the index of the currentValue inside a value of the values array
+ * @param currentInput
+ * @param item
+ * @returns {number}
+ */
+const indexOfMatch = (currentInput, item) =>
+  item.label.toLowerCase().indexOf(currentInput.toLowerCase());
 
-    this.state = {
-      /*  last valid item that was selected from the drop down menu */
-      lastValidItem: undefined,
-      /* current input text */
-      currentInput: initialValue,
-      /* current set of matching items */
-      matchingItems: [],
-      /* visibility property of the drop down menu */
-      visible: false,
-      /* index of the currently focused item in the drop down menu */
-      focusIndex: 0,
-      /* cleaner click events, click interaction within dropdown menu */
-      interactionHappened: false,
-      /* show loader if still matching in debounced mode */
-      isMatchingDebounced: false,
-    };
+/**
+ * index of item in items
+ * @param {*} item
+ * @param {*} items
+ */
+const indexOfItem = (item, items) =>
+  items.indexOf(items.find(i => i.key === item.key));
 
-    /* to manage debouncing of matching, typing input into the input field */
-    this.inputHappenedTimeout = undefined;
-  }
+const DataListInput = ({
+  activeItemClassName,
+  clearInputOnSelect,
+  debounceLoader,
+  debounceTime,
+  dropdownClassName,
+  dropDownLength,
+  initialValue,
+  inputClassName,
+  itemClassName,
+  match,
+  onDropdownClose,
+  onDropdownOpen,
+  onInput,
+  onSelect,
+  placeholder,
+  requiredInputLength,
+  suppressReselect,
+  items,
+}) => {
+  /*  last valid item that was selected from the drop down menu */
+  const [lastValidItem, setLastValidItem] = useState();
+  /* current input text */
+  const [currentInput, setCurrentInput, currentInputRef] = useStateRef(
+    initialValue
+  );
+  /* current set of matching items */
+  const [matchingItems, setMatchingItems] = useState([]);
+  /* visibility property of the drop down menu */
+  const [visible, setVisible, visibleRef] = useStateRef(false);
+  /* index of the currently focused item in the drop down menu */
+  const [focusIndex, setFocusIndex] = useState(0);
+  /* cleaner click events, click interaction within dropdown menu */
+  const interactionHappenedRef = useRef(false);
+  /* show loader if still matching in debounced mode */
+  const [isMatchingDebounced, setIsMatchingDebounced] = useState(false);
 
-    componentDidMount = () => {
-      if (typeof window !== 'undefined') {
-        window.addEventListener('click', this.onClickCloseMenu, false);
-      }
-    }
+  /* to manage debouncing of matching, typing input into the input field */
+  const inputHappenedTimeout = useRef();
+  const menu = useRef();
+  const inputField = useRef();
 
-    componentDidUpdate = () => {
-      const { currentInput, visible, isMatchingDebounced } = this.state;
-      const { initialValue } = this.props;
-
-      // if we have an initialValue, we want to reset it everytime we update and are empty
-      // also setting a new initialValue will trigger this
-      if (!currentInput && initialValue && !visible && !isMatchingDebounced) {
-        this.setState({ currentInput: initialValue });
-      }
-    }
-
-    componentWillUnmount = () => {
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('click', this.onClickCloseMenu);
-      }
-    }
-
-    onClickCloseMenu = (event) => {
-      const menu = document.getElementsByClassName('datalist-items');
-      if (!menu || !menu.length) return;
+  useEffect(() => {
+    const onClickCloseMenu = event => {
+      if (!menu.current) return;
       // if rerender, items inside might change, allow one click without further checking
-      const { interactionHappened } = this.state;
-      if (interactionHappened) {
-        this.setState({ interactionHappened: false });
+      if (interactionHappenedRef.current) {
+        interactionHappenedRef.current = false;
         return;
       }
       // do not do anything if input is clicked, as we have a dedicated func for that
-      const input = document.getElementsByClassName('autocomplete-input');
-      if (!input) return;
-      for (let i = 0; i < input.length; i += 1) {
-        const targetIsInput = event.target === input[i];
-        const targetInInput = input[i].contains(event.target);
-        if (targetIsInput || targetInInput) return;
-      }
+      if (!inputField.current) return;
+      const targetIsInput = event.target === inputField.current;
+      const targetInInput = inputField.current.contains(event.target);
+      if (targetIsInput || targetInInput) return;
 
       // do not close menu if user clicked inside
-      for (let i = 0; i < menu.length; i += 1) {
-        const targetInMenu = menu[i].contains(event.target);
-        const targetIsMenu = event.target === menu[i];
-        if (targetInMenu || targetIsMenu) return;
+      const targetInMenu = menu.current.contains(event.target);
+      const targetIsMenu = event.target === menu.current;
+      if (targetInMenu || targetIsMenu) return;
+
+      if (visibleRef.current) {
+        setVisible(false);
+        setFocusIndex(-1);
+        onDropdownClose();
       }
-      const { visible } = this.state;
-      const { onDropdownClose } = this.props;
-      if (visible) {
-        this.setState({ visible: false, focusIndex: -1 }, onDropdownClose);
-      }
+    };
+    window.addEventListener('click', onClickCloseMenu, false);
+    return () => {
+      window.removeEventListener('click', onClickCloseMenu);
+    };
+  }, [onDropdownClose, setVisible, visibleRef]);
+
+  useEffect(() => {
+    // if we have an initialValue, we want to reset it everytime we update and are empty
+    // also setting a new initialValue will trigger this
+    if (!currentInput && initialValue && !visible && !isMatchingDebounced) {
+      setCurrentInput(initialValue);
     }
+  }, [
+    currentInput,
+    visible,
+    isMatchingDebounced,
+    initialValue,
+    setCurrentInput,
+  ]);
 
-    /**
-     * default function for matching the current input value (needle)
-     * and the values of the items array
-     * @param currentInput
-     * @param item
-     * @returns {boolean}
-     */
-    match = (currentInput, item) => item
-      .label.substr(0, currentInput.length).toUpperCase() === currentInput.toUpperCase();
-
-    /**
-     * matching process to find matching entries in items array
-     * @param currentInput
-     * @param item
-     * @param match
-     * @returns {Array}
-     */
-    matching = (currentInput, items, match) => items.filter((item) => {
-      if (typeof (match) === typeof (Function)) { return match(currentInput, item); }
-      return this.match(currentInput, item);
-    });
-
-    /**
-     * function for getting the index of the currentValue inside a value of the values array
-     * @param currentInput
-     * @param item
-     * @returns {number}
-     */
-    indexOfMatch = (currentInput, item) => item
-      .label.toUpperCase().indexOf(currentInput.toUpperCase());
-
-    indexOfItem = (item, items) => items.indexOf(items.find(i => i.key === item.key))
-
-    /**
-     * runs the matching process of the current input
-     * and handles debouncing the different callback calls to reduce lag time
-     * for bigger datasets or heavier matching algorithms
-     * @param currentInput
-     */
-    debouncedMatchingUpdateStep = (currentInput) => {
-      const { lastValidItem } = this.state;
-      const {
-        items, match, debounceTime, dropDownLength, requiredInputLength,
-        clearInputOnSelect, onDropdownOpen, onDropdownClose,
-      } = this.props;
-        // cleanup waiting update step && be ssr safe
-      if (this.inputHappenedTimeout && typeof window !== 'undefined') {
-        window.clearTimeout(this.inputHappenedTimeout);
-        this.inputHappenedTimeout = null;
+  /**
+   * runs the matching process of the current input
+   * and handles debouncing the different callback calls to reduce lag time
+   * for bigger datasets or heavier matching algorithms
+   * @param nextInput
+   */
+  const debouncedMatchingUpdateStep = useCallback(
+    nextInput => {
+      // cleanup waiting update step
+      if (inputHappenedTimeout.current) {
+        clearTimeout(inputHappenedTimeout.current);
+        inputHappenedTimeout.current = null;
       }
 
-      // set currentInput into input field and show loading if debounced mode is on
-      const reachedRequiredLength = currentInput.length >= requiredInputLength;
-      const showMatchingStillLoading = debounceTime >= 0 && reachedRequiredLength;
-      this.setState({ currentInput, isMatchingDebounced: showMatchingStillLoading });
-
+      // set nextInput into input field and show loading if debounced mode is on
+      const reachedRequiredLength = nextInput.length >= requiredInputLength;
+      const showMatchingStillLoading =
+        debounceTime >= 0 && reachedRequiredLength;
+      setCurrentInput(nextInput);
+      setIsMatchingDebounced(showMatchingStillLoading);
       // no matching if we do not reach required input length
       if (!reachedRequiredLength) return;
 
       const updateMatchingItems = () => {
-        const matchingItems = this.matching(currentInput, items, match);
-        const displayableItems = matchingItems.slice(0, dropDownLength);
+        // matching process to find matching entries in items array
+        const updatedMatchingItems = items.filter(item => {
+          if (typeof match === typeof Function) return match(nextInput, item);
+          return labelMatch(nextInput, item);
+        });
+        const displayableItems = updatedMatchingItems.slice(0, dropDownLength);
         const showDragIndex = lastValidItem && !clearInputOnSelect;
-        const index = showDragIndex ? this.indexOfItem(lastValidItem, displayableItems) : 0;
-        if (matchingItems.length > 0) {
-          this.setState({
-            matchingItems: displayableItems,
-            focusIndex: index > 0 ? index : 0,
-            visible: true,
-            isMatchingDebounced: false,
-          }, onDropdownOpen);
+        const index = showDragIndex
+          ? indexOfItem(lastValidItem, displayableItems)
+          : 0;
+        if (displayableItems.length) {
+          if (!visibleRef.current) {
+            onDropdownOpen();
+          }
+          setMatchingItems(displayableItems);
+          setFocusIndex(index > 0 ? index : 0);
+          setIsMatchingDebounced(false);
+          setVisible(true);
         } else {
-          this.setState({
-            matchingItems: displayableItems,
-            visible: false,
-            focusIndex: -1,
-            isMatchingDebounced: false,
-          }, onDropdownClose);
+          if (visibleRef.current) {
+            setVisible(false);
+            onDropdownClose();
+          }
+          setMatchingItems(displayableItems);
+          setFocusIndex(-1);
+          setIsMatchingDebounced(false);
         }
       };
 
       if (debounceTime <= 0) {
         updateMatchingItems();
       } else {
-        if (typeof window !== 'undefined') {
-            this.inputHappenedTimeout = window.setTimeout(updateMatchingItems, debounceTime);
-        }
+        inputHappenedTimeout.current = setTimeout(
+          updateMatchingItems,
+          debounceTime
+        );
       }
+    },
+    [
+      requiredInputLength,
+      debounceTime,
+      setCurrentInput,
+      items,
+      dropDownLength,
+      lastValidItem,
+      clearInputOnSelect,
+      match,
+      setVisible,
+      onDropdownOpen,
+      visibleRef,
+      onDropdownClose,
+    ]
+  );
+
+  /**
+   * gets called when someone starts to write in the input field
+   * @param value
+   */
+  const onHandleInput = useCallback(
+    event => {
+      const { value } = event.target;
+      debouncedMatchingUpdateStep(value);
+      onInput(value);
+    },
+    [debouncedMatchingUpdateStep, onInput]
+  );
+
+  const onClickInput = useCallback(() => {
+    let value = currentInputRef.current;
+    // if user clicks on input field with initialValue,
+    // the user most likely wants to clear the input field
+    if (initialValue && value === initialValue) {
+      value = '';
     }
 
-    /**
-     * gets called when someone starts to write in the input field
-     * @param value
-     */
-    onHandleInput = (event) => {
-      const { onInput } = this.props;
-      const currentInput = event.target.value;
-      this.debouncedMatchingUpdateStep(currentInput);
-      onInput(currentInput);
-    };
-
-    onClickInput = () => {
-      const { visible } = this.state;
-      let { currentInput } = this.state;
-      const { requiredInputLength, initialValue } = this.props;
-
-      // if user clicks on input field with initialValue,
-      // the user most likely wants to clear the input field
-      if (initialValue && currentInput === initialValue) {
-        this.setState({ currentInput: '' });
-        currentInput = '';
-      }
-
-      const reachedRequiredLength = currentInput.length >= requiredInputLength;
-      if (reachedRequiredLength && !visible) {
-        this.debouncedMatchingUpdateStep(currentInput);
-      }
+    const reachedRequiredLength = value.length >= requiredInputLength;
+    if (reachedRequiredLength && !visibleRef.current) {
+      debouncedMatchingUpdateStep(value);
     }
+  }, [
+    currentInputRef,
+    initialValue,
+    requiredInputLength,
+    visibleRef,
+    debouncedMatchingUpdateStep,
+  ]);
 
-    /**
-     * handle key events
-     * @param event
-     */
-    onHandleKeydown = (event) => {
-      const { visible, focusIndex, matchingItems } = this.state;
+  /**
+   * handleSelect is called onClickItem and onEnter upon an option of the drop down menu
+   * does nothing if the key has not changed since the last onSelect event
+   * @param selectedItem
+   */
+  const onHandleSelect = useCallback(
+    selectedItem => {
+      // block select call until last matching went through
+      if (isMatchingDebounced) return;
+
+      setCurrentInput(clearInputOnSelect ? '' : selectedItem.label);
+      setVisible(false);
+      setFocusIndex(-1);
+      interactionHappenedRef.current = true;
+      onDropdownClose();
+
+      if (
+        suppressReselect &&
+        lastValidItem &&
+        selectedItem.key === lastValidItem.key
+      ) {
+        // do not trigger the callback function
+        // but still change state to fit new selection
+        return;
+      }
+      // change state to fit new selection
+      setLastValidItem(selectedItem);
+      // callback function onSelect
+      onSelect(selectedItem);
+    },
+    [
+      isMatchingDebounced,
+      setCurrentInput,
+      clearInputOnSelect,
+      setVisible,
+      onDropdownClose,
+      suppressReselect,
+      lastValidItem,
+      onSelect,
+    ]
+  );
+
+  /**
+   * handle key events
+   * @param event
+   */
+  const onHandleKeydown = useCallback(
+    event => {
       // only do something if drop-down div is visible
-      if (!visible) return;
+      if (!visibleRef.current) return;
       let currentFocusIndex = focusIndex;
       if (event.keyCode === 40 || event.keyCode === 9) {
         // If the arrow DOWN key or tab is pressed increase the currentFocus variable:
         currentFocusIndex += 1;
         if (currentFocusIndex >= matchingItems.length) currentFocusIndex = 0;
-        this.setState({
-          focusIndex: currentFocusIndex,
-        });
+        setFocusIndex(currentFocusIndex);
         // prevent tab to jump to the next input field if drop down is still open
         event.preventDefault();
       } else if (event.keyCode === 38) {
         // If the arrow UP key is pressed, decrease the currentFocus variable:
         currentFocusIndex -= 1;
-        if (currentFocusIndex <= -1) currentFocusIndex = matchingItems.length - 1;
-        this.setState({
-          focusIndex: currentFocusIndex,
-        });
+        if (currentFocusIndex <= -1)
+          currentFocusIndex = matchingItems.length - 1;
+        setFocusIndex(currentFocusIndex);
       } else if (event.keyCode === 13) {
         // Enter pressed, similar to onClickItem
         if (focusIndex > -1) {
           // Simulate a click on the "active" item:
           const selectedItem = matchingItems[currentFocusIndex];
-          this.onSelect(selectedItem);
+          onHandleSelect(selectedItem);
         }
       }
-    };
+    },
+    [focusIndex, matchingItems, onHandleSelect, visibleRef]
+  );
 
-    /**
-     * onClickItem gets called when onClick happens on one of the list elements
-     * @param event
-     */
-    onClickItem = (event) => {
-      const { matchingItems } = this.state;
-      // update the input value and close the dropdown again
-      const elements = event.currentTarget.children;
-      let selectedKey;
-      for (let i = 0; i < elements.length; i += 1) {
-        if (elements[i].tagName === 'INPUT') {
-          selectedKey = elements[i].value;
-          break;
-        }
-      }
-      // key can either be number or string
-      // eslint-disable-next-line eqeqeq
-      const selectedItem = matchingItems.find(item => item.key == selectedKey);
-      this.onSelect(selectedItem);
-    };
+  const renderItemLabel = useCallback(
+    item => {
+      const index = indexOfMatch(currentInput, item);
+      const inputLength = currentInput.length;
+      return (
+        <>
+          {index >= 0 && inputLength ? (
+            // renders label with matching search string marked
+            <>
+              {item.label.substr(0, index)}
+              <strong>{item.label.substr(index, inputLength)}</strong>
+              {item.label.substr(index + inputLength, item.label.length)}
+            </>
+          ) : (
+            item.label
+          )}
+        </>
+      );
+    },
+    [currentInput]
+  );
 
-    /**
-     * onSelect is called onClickItem and onEnter upon an option of the drop down menu
-     * does nothing if the key has not changed since the last onSelect event
-     * @param selectedItem
-     */
-    onSelect = (selectedItem) => {
-      const { suppressReselect, clearInputOnSelect, onDropdownClose } = this.props;
-      const { lastValidItem, isMatchingDebounced } = this.state;
-      // block select call until last matching went through
-      if (isMatchingDebounced) return;
-      if (suppressReselect && lastValidItem && selectedItem.key === lastValidItem.key) {
-        // do not trigger the callback function
-        // but still change state to fit new selection
-        this.setState({
-          currentInput: clearInputOnSelect ? '' : selectedItem.label,
-          visible: false,
-          focusIndex: -1,
-          interactionHappened: true,
-        }, onDropdownClose);
-        return;
-      }
-      // change state to fit new selection
-      this.setState({
-        currentInput: clearInputOnSelect ? '' : selectedItem.label,
-        lastValidItem: selectedItem,
-        visible: false,
-        focusIndex: -1,
-        interactionHappened: true,
-      }, onDropdownClose);
-      // callback function onSelect
-      const { onSelect } = this.props;
-      onSelect(selectedItem);
-    };
-
-    renderMatchingLabel = (currentInput, item, indexOfMatch) => (
-      <React.Fragment>
-        {item.label.substr(0, indexOfMatch) }
-        <strong>
-          { item.label.substr(indexOfMatch, currentInput.length) }
-        </strong>
-        { item.label.substr(indexOfMatch + currentInput.length, item.label.length) }
-      </React.Fragment>
-    );
-
-    renderItemLabel = (currentInput, item, indexOfMatch) => (
-      <React.Fragment>
-        { indexOfMatch >= 0 && currentInput.length
-          ? this.renderMatchingLabel(currentInput, item, indexOfMatch)
-          : item.label }
-      </React.Fragment>
-    )
-
-    renderItems = (
-      currentInput, items, focusIndex, activeItemClassName, itemClassName, dropdownClassName,
-    ) => (
-      <div className={`datalist-items ${dropdownClassName || 'default-datalist-items'}`}>
-        {items.map((item, i) => {
+  const renderItems = useCallback(
+    () => (
+      <>
+        {matchingItems.map((item, i) => {
           const isActive = focusIndex === i;
           const itemActiveClasses = isActive
-            ? `datalist-active-item ${activeItemClassName || 'datalist-active-item-default'}` : '';
+            ? `datalist-active-item ${activeItemClassName ||
+                'datalist-active-item-default'}`
+            : '';
           const itemClasses = `${itemClassName} ${itemActiveClasses}`;
           return (
             <div
-              onClick={this.onClickItem}
+              onClick={() => onHandleSelect(item)}
               className={itemClasses}
               key={item.key}
               tabIndex={0}
               role="button"
+              aria-label={item.label}
               onKeyUp={event => event.preventDefault()}
             >
-              {this.renderItemLabel(
-                currentInput, item, this.indexOfMatch(currentInput, item),
-              )}
-              <input type="hidden" value={item.key} readOnly />
+              {renderItemLabel(item)}
             </div>
           );
         })}
-      </div>
-    );
+      </>
+    ),
+    [
+      matchingItems,
+      focusIndex,
+      activeItemClassName,
+      itemClassName,
+      onHandleSelect,
+      renderItemLabel,
+    ]
+  );
 
-    renderLoader = (debounceLoader, dropdownClassName, itemClassName) => (
-      <div className={`datalist-items ${dropdownClassName || 'default-datalist-items'}`}>
-        <div className={itemClassName}>{debounceLoader || 'loading...'}</div>
-      </div>
-    )
+  const dropDown = useMemo(() => {
+    const reachedRequiredLength =
+      currentInputRef.current.length >= requiredInputLength;
+    if (reachedRequiredLength && isMatchingDebounced) {
+      return (
+        <div
+          ref={menu}
+          className={`datalist-items ${dropdownClassName ||
+            'default-datalist-items'}`}
+          role="dialog"
+          aria-label="Dropdown menu"
+        >
+          <div className={itemClassName}>{debounceLoader || 'loading...'}</div>
+        </div>
+      );
+    }
+    if (reachedRequiredLength && visible) {
+      return (
+        <div
+          ref={menu}
+          className={`datalist-items ${dropdownClassName ||
+            'default-datalist-items'}`}
+          role="dialog"
+          aria-label="Dropdown menu"
+        >
+          {renderItems()}
+        </div>
+      );
+    }
+    return undefined;
+  }, [
+    currentInputRef,
+    requiredInputLength,
+    isMatchingDebounced,
+    visible,
+    dropdownClassName,
+    itemClassName,
+    debounceLoader,
+    renderItems,
+  ]);
 
-    renderInputField = (placeholder, currentInput, inputClassName) => (
+  return (
+    <div className="datalist-input">
       <input
-        onChange={this.onHandleInput}
-        onClick={this.onClickInput}
-        onKeyDown={this.onHandleKeydown}
+        ref={inputField}
+        onChange={onHandleInput}
+        onClick={onClickInput}
+        onKeyDown={onHandleKeydown}
         type="text"
         className={`autocomplete-input ${inputClassName}`}
         placeholder={placeholder}
         value={currentInput}
+        aria-label="Search"
       />
-    )
-
-    render() {
-      const {
-        currentInput, matchingItems, focusIndex, visible, isMatchingDebounced,
-      } = this.state;
-      const {
-        placeholder, inputClassName, activeItemClassName, itemClassName,
-        requiredInputLength, dropdownClassName, debounceLoader,
-      } = this.props;
-
-      const reachedRequiredLength = currentInput.length >= requiredInputLength;
-
-      let renderedResults;
-      if (reachedRequiredLength && isMatchingDebounced) {
-        renderedResults = this.renderLoader(debounceLoader, itemClassName, dropdownClassName);
-      } else if (reachedRequiredLength && visible) {
-        renderedResults = this.renderItems(currentInput, matchingItems, focusIndex,
-          activeItemClassName, itemClassName, dropdownClassName);
-      }
-      return (
-        <div className="datalist-input">
-          { this.renderInputField(placeholder, currentInput, inputClassName) }
-          { renderedResults }
-        </div>
-      );
-    }
-}
+      {dropDown}
+    </div>
+  );
+};
 
 DataListInput.propTypes = {
   items: PropTypes.arrayOf(
     PropTypes.shape({
       label: PropTypes.string.isRequired,
-      key: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.number,
-      ]).isRequired,
-    }),
+      key: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    })
   ).isRequired,
   placeholder: PropTypes.string,
   onSelect: PropTypes.func.isRequired,

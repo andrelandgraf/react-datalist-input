@@ -53,7 +53,10 @@ function annoyinglySlowMatchingAlg(currentInput, item) {
     // eslint-disable-next-line no-unused-expressions
     (currentInput.length + item.label.length) % 2;
   }
-  return item.label.substr(0, currentInput.length).toUpperCase() === currentInput.toUpperCase();
+  return (
+    item.label.substr(0, currentInput.length).toUpperCase() ===
+    currentInput.toUpperCase()
+  );
 }
 
 function App() {
@@ -61,27 +64,21 @@ function App() {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
-    getAndParseData(csvFile).then(obj => setItems(obj
-      .concat(obj)
-      .map((row, i) => (
-        {
+    getAndParseData(csvFile).then(obj =>
+      setItems(
+        obj.concat(obj).map((row, i) => ({
           ...row,
           label: row.vorname,
           key: i,
-        }
-      ))));
+        }))
+      )
+    );
   }, []);
 
   return (
     <div className="App">
       <div className="content">
-        {
-                    item && (
-                    <div>
-                      { `Current Item: ${item.label}` }
-                    </div>
-                    )
-                }
+        {item && <div>{`Current Item: ${item.label}`}</div>}
         <div className="wrapper">
           <DataListInput
             items={items}
