@@ -125,7 +125,7 @@ const YourComponent = ({ myValues }) => {
   - currentInput: String, the current user input typed into the input field
   - item: Object, the item of the items array (with key and label properties)
 
-- Default:
+- Default match function:
 
 ```javascript
 /**
@@ -134,12 +134,16 @@ const YourComponent = ({ myValues }) => {
  * @param item (one item of the items array)
  * @returns {boolean}
  */
-match = (currentInput, item) => {
-  return (
-    item.label.substr(0, currentInput.length).toUpperCase() ===
-    currentInput.toUpperCase()
-  );
-};
+const match = (currentInput, item) =>
+  item.label.substr(0, currentInput.length).toUpperCase() ===
+  currentInput.toUpperCase();
+```
+
+- If you are looking to have the same behavior as the HTML element [datalist](https://developer.mozilla.org/de/docs/Web/HTML/Element/datalist), use a match function like follows:
+
+```javascript
+const match = (currentInput, item) =>
+  item.label.toLowerCase().includes(currentInput.toLowerCase());
 ```
 
 ### <a name="markdown-header-onDropdownOpen"></a>onDropdownOpen
