@@ -79,7 +79,7 @@ const onDropdownOpen = jest.fn();
 const onDropdownClose = jest.fn();
 const onInput = jest.fn();
 
-describe('DataListInput', async () => {
+describe('DataListInput', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
