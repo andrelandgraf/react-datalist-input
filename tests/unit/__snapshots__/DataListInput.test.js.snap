@@ -1,5 +1,131 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`DataListInput custom value prop: renders value after setting value empty to clear input field 1`] = `
+<body>
+  <div>
+    <div
+      class="datalist-input"
+    >
+      <input
+        aria-label="Search"
+        class="autocomplete-input "
+        placeholder="Type something in here..."
+        type="text"
+        value="Apple"
+      />
+      <div
+        aria-label="Dropdown menu"
+        class="datalist-items default-datalist-items"
+        role="dialog"
+      >
+        <div
+          aria-label="Apple"
+          class=" datalist-active-item datalist-active-item-default"
+          role="button"
+          tabindex="0"
+        >
+          
+          <strong>
+            Apple
+          </strong>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`DataListInput custom value prop: renders value after setting value empty to clear input field 2`] = `
+<body>
+  <div>
+    <div
+      class="datalist-input"
+    >
+      <input
+        aria-label="Search"
+        class="autocomplete-input "
+        placeholder="Type something in here..."
+        type="text"
+        value="Apple"
+      />
+      <div
+        aria-label="Dropdown menu"
+        class="datalist-items default-datalist-items"
+        role="dialog"
+      >
+        <div
+          aria-label="Apple"
+          class=" datalist-active-item datalist-active-item-default"
+          role="button"
+          tabindex="0"
+        >
+          
+          <strong>
+            Apple
+          </strong>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`DataListInput custom value prop: renders value after setting value empty to clear input field 3`] = `
+<body>
+  <div>
+    <div
+      class="datalist-input"
+    >
+      <input
+        aria-label="Search"
+        class="autocomplete-input "
+        placeholder="Type something in here..."
+        type="text"
+        value="Peach"
+      />
+    </div>
+  </div>
+</body>
+`;
+
+exports[`DataListInput custom value prop: renders value after setting value empty to clear input field 4`] = `
+<body>
+  <div>
+    <div
+      class="datalist-input"
+    >
+      <input
+        aria-label="Search"
+        class="autocomplete-input "
+        placeholder="Type something in here..."
+        type="text"
+        value="Apple"
+      />
+    </div>
+  </div>
+</body>
+`;
+
+exports[`DataListInput custom value prop: renders value after setting value empty to clear input field 5`] = `
+<body>
+  <div>
+    <div
+      class="datalist-input"
+    >
+      <input
+        aria-label="Search"
+        class="autocomplete-input "
+        placeholder="Type something in here..."
+        type="text"
+        value=""
+      />
+    </div>
+  </div>
+</body>
+`;
+
 exports[`DataListInput renders the same html based on the same inputs 1`] = `
 <body>
   <div>

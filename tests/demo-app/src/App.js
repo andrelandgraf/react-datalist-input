@@ -78,6 +78,9 @@ function App() {
   return (
     <div className="App">
       <div className="content">
+        <button onClick={() => setItem(undefined)} type="button">
+          Clear
+        </button>
         {item && <div>{`Current Item: ${item.label}`}</div>}
         <div className="wrapper">
           <DataListInput
@@ -85,10 +88,11 @@ function App() {
             onSelect={i => setItem(i)}
             placeholder="Select a ingredient"
             clearInputOnSelect={false}
+            clearInputOnClick={false}
             suppressReselect
-            initialValue={item ? item.label : ''}
             debounceTime={1000}
-            debounceLoader={<>Hello</>}
+            debounceLoader={<>Loading...</>}
+            value={item ? item.label : ''}
           />
         </div>
       </div>
