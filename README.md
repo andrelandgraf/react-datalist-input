@@ -40,6 +40,13 @@ Changes:
 - introduces optional `clearOnClickInput` prop (default false)
 - introduces optional `onClick` lifecycle method prop (default empty function)
 
+#### Version 2.0.0
+
+Changes:
+
+- refactors component to functional component using hooks
+- adds `useStateRef` to reduce re-renders and boost performance
+
 ## Installation
 
 ### Installation via npm
@@ -116,6 +123,7 @@ const YourComponent = ({ myValues }) => {
 | [debounceTime](#markdown-header-debounceTime)               | number   | optional          | 0                          |
 | [debounceLoader](#markdown-header-debounceLoader)           | string   | optional          | 'Loading...'               |
 | [onInput](#markdown-header-onInput)                         | function | optional          | -                          |
+| [onClick](#markdown-header-onClick)                         | function | optional          | -                          |
 
 ### <a name="markdown-header-items"></a>items
 
@@ -291,4 +299,4 @@ useEffect(() => {
 
 - The callback function that will be called whenever the user clicks the input field
 - This callback is exposed so you can implement `clearOnClickInput` on your own if you pass the `value` prop
-- The callback will receive the `currentInput` of type string based on `clearOnClickInput` and the last user input.
+- The callback will receive the `currentInput` of type string based on `clearOnClickInput` and the last user input
