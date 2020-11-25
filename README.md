@@ -25,6 +25,21 @@ I created a plain version of this package without css. Find more information [he
 
 The documentation below mainly applies for both versions but will be updated based on version 2.x.x updates in the future.
 
+### Changelog
+
+#### Version 2.1.0
+
+Motivation: [issue 23](https://github.com/andrelandgraf/react-datalist-input/issues/23)
+
+Offer optional value prop, in case the user requires full control to change/clear the input value based on side effects
+
+Changes:
+
+- deprecates optional `initialValue` prop
+- introduces optional `value` prop instead (default undefined)
+- introduces optional `clearOnClickInput` prop (default false)
+- introduces optional `onClick` lifecycle method prop (default empty function)
+
 ## Installation
 
 ### Installation via npm
@@ -94,9 +109,10 @@ const YourComponent = ({ myValues }) => {
 | [dropdownClassName](#markdown-header-dropdownClassName)     | string   | optional          | -                          |
 | [requiredInputLength](#markdown-header-requiredInputLength) | number   | optional          | 0                          |
 | [clearInputOnSelect](#markdown-header-clearInputOnSelect)   | boolean  | optional          | false                      |
+| [clearInputOnClick](#markdown-header-clearInputOnClick)     | boolean  | optional          | false                      |
 | [suppressReselect](#markdown-header-suppressReselect)       | boolean  | optional          | true                       |
 | [dropDownLength](#markdown-header-dropDownLength)           | number   | optional          | infinite                   |
-| [initialValue](#markdown-header-initialValue)               | string   | optional          | -                          |
+| [value](#markdown-header-value)                             | string   | optional          | undefined                  |
 | [debounceTime](#markdown-header-debounceTime)               | number   | optional          | 0                          |
 | [debounceLoader](#markdown-header-debounceLoader)           | string   | optional          | 'Loading...'               |
 | [onInput](#markdown-header-onInput)                         | function | optional          | -                          |
@@ -193,8 +209,15 @@ const match = (currentInput, item) =>
 
 ### <a name="markdown-header-clearInputOnSelect"></a>clearInputOnSelect
 
-- Should the input field be cleared on select on filled with selected item?
+- Should the input field be cleared on select or filled with selected item?
 - Default is false.
+- ❗ This property does not work if the prop `value` is set, you have to use the lifecycle method `onSelect` and set your value state on your own.
+
+### <a name="markdown-header-clearInputOnClick"></a>clearInputOnClick
+
+- Should the input field be cleared on click or filled with selected item?
+- Default is false.
+- ❗ This property does not workif the prop `value` is set, you have to use the lifecycle method `onClick` and set your value state on your own.
 
 ### <a name="markdown-header-suppressReselect"></a>suppressReselect
 
@@ -207,13 +230,39 @@ const match = (currentInput, item) =>
 - Number to specify max length of drop down.
 - Default is Infinity.
 
-### <a name="markdown-header-initialValue"></a>initialValue
+### <a name="markdown-header-value"></a>value
 
-- Specify an initial value for the input field.
-- For example, `initialValue={'hello world'}` will print `hello world` into the input field on first render.
-- Default is empty string.
-- Caution: Don't confuse this with a placeholder (see placerholder prop), this is an actual value in the input
-  and supports uses cases like saving user state or suggesting a search value.
+- `initialValue` is deprecated, use `value` instead
+- `value` can be used to specify and override the value of the input field
+- For example, `value="hello world"` will print `hello world` into the input field
+- Default is undefined
+- ❗ If you want to clean the input field based on side effects use `value` of empty string.
+- ❗ Use `value` only if you want complete control over the value of the input field. `react-datalist-input` will priotize whatever value is set over anything the user selects or has selected. If you use `value`, you will have to update it on your own using the `onClick`, `onInput`, and`onSelect` lifecycle methods.
+- ❗ Don't confuse this with a placeholder (see placerholder prop). This property sets the actual value of the input field.
+- ❗ The flags `clearInputOnSelect` and `clearInputOnClick` won't work and have to be implemented via the mentioned lifecycle methods.
+
+The following `useEffect` is used to decide if the component should update with the new `value` property:
+
+```javascript
+useEffect(() => {
+  // the parent component can pass its own value prop that will override the internally used currentInput
+  // this will happen only after we are have finished the current computing step and the dropdown is invisible
+  // (to avoid confusion of changing input values for the user)
+  /*
+   * we have to distinguish undefined and empty string value
+   * value == undefined => not set, use internal current input
+   * value !== undefined => value set, use value and override currentInput
+   * this enables value === '' to clear the input field
+   */
+  const isValuePropSet = value !== undefined;
+  const isValueDifferent = currentInputRef.current !== value;
+  // is drop down visible or are we currently matching based on user input
+  const isMatchingRunning = visible || isMatchingDebounced;
+  if (isValuePropSet && isValueDifferent && !isMatchingRunning) {
+    setCurrentInput(value);
+  }
+}, [visible, isMatchingDebounced, value, setCurrentInput, currentInputRef]);
+```
 
 ### <a name="markdown-header-debounceTime"></a>debounceTime
 
@@ -236,3 +285,10 @@ const match = (currentInput, item) =>
 
 - The callback function that will be called whenever the user types into the input field
 - Exposing this function supports use cases like resetting states on empty input field
+- The callback will receive the `newValue` of type string from `event.target.value`
+
+### <a name="markdown-header-onClick"></a>onClick
+
+- The callback function that will be called whenever the user clicks the input field
+- This callback is exposed so you can implement `clearOnClickInput` on your own if you pass the `value` prop
+- The callback will receive the `currentInput` of type string based on `clearOnClickInput` and the last user input.

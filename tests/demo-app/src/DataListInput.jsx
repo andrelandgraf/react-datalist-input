@@ -42,11 +42,12 @@ const indexOfItem = (item, items) =>
 const DataListInput = ({
   activeItemClassName,
   clearInputOnSelect,
+  clearInputOnClick,
   debounceLoader,
   debounceTime,
   dropdownClassName,
   dropDownLength,
-  initialValue,
+  value,
   inputClassName,
   itemClassName,
   match,
@@ -54,6 +55,7 @@ const DataListInput = ({
   onDropdownOpen,
   onInput,
   onSelect,
+  onClick,
   placeholder,
   requiredInputLength,
   suppressReselect,
@@ -63,7 +65,7 @@ const DataListInput = ({
   const [lastValidItem, setLastValidItem] = useState();
   /* current input text */
   const [currentInput, setCurrentInput, currentInputRef] = useStateRef(
-    initialValue
+    value !== undefined ? value : ''
   );
   /* current set of matching items */
   const [matchingItems, setMatchingItems] = useState([]);
@@ -113,18 +115,22 @@ const DataListInput = ({
   }, [onDropdownClose, setVisible, visibleRef]);
 
   useEffect(() => {
-    // if we have an initialValue, we want to reset it everytime we update and are empty
-    // also setting a new initialValue will trigger this
-    if (!currentInput && initialValue && !visible && !isMatchingDebounced) {
-      setCurrentInput(initialValue);
+    // the parent component can pass its own value prop that will override the internally used currentInput
+    // this will happen only after we are have finished the current computing step and the dropdown is invisible
+    // (to avoid confusion of changing input values for the user)
+    /*
+     * we have to distinguish undefined and empty string value
+     * value == undefined => not set, use internal current input
+     * value !== undefined => value set, use value and override currentInput
+     * this enables value === '' to clear the input field
+     */
+    const isValuePropSet = value !== undefined;
+    const isValueDifferent = currentInputRef.current !== value;
+    const isMatchingRunning = visible || isMatchingDebounced;
+    if (isValuePropSet && isValueDifferent && !isMatchingRunning) {
+      setCurrentInput(value);
     }
-  }, [
-    currentInput,
-    visible,
-    isMatchingDebounced,
-    initialValue,
-    setCurrentInput,
-  ]);
+  }, [visible, isMatchingDebounced, value, setCurrentInput, currentInputRef]);
 
   /**
    * runs the matching process of the current input
@@ -206,32 +212,33 @@ const DataListInput = ({
 
   /**
    * gets called when someone starts to write in the input field
-   * @param value
+   * @param event
    */
   const onHandleInput = useCallback(
     event => {
-      const { value } = event.target;
-      debouncedMatchingUpdateStep(value);
-      onInput(value);
+      const { value: newValue } = event.target;
+      debouncedMatchingUpdateStep(newValue);
+      onInput(newValue);
     },
     [debouncedMatchingUpdateStep, onInput]
   );
 
   const onClickInput = useCallback(() => {
-    let value = currentInputRef.current;
-    // if user clicks on input field with initialValue,
+    let currentValue = currentInputRef.current;
+    // if user clicks on input field with value,
     // the user most likely wants to clear the input field
-    if (initialValue && value === initialValue) {
-      value = '';
+    if (currentValue && clearInputOnClick) {
+      currentValue = '';
     }
-
-    const reachedRequiredLength = value.length >= requiredInputLength;
+    onClick(currentValue);
+    const reachedRequiredLength = currentValue.length >= requiredInputLength;
     if (reachedRequiredLength && !visibleRef.current) {
-      debouncedMatchingUpdateStep(value);
+      debouncedMatchingUpdateStep(currentValue);
     }
   }, [
     currentInputRef,
-    initialValue,
+    clearInputOnClick,
+    onClick,
     requiredInputLength,
     visibleRef,
     debouncedMatchingUpdateStep,
@@ -376,11 +383,29 @@ const DataListInput = ({
       currentInputRef.current.length >= requiredInputLength;
     if (reachedRequiredLength && isMatchingDebounced) {
       return (
-        <div className={itemClassName}>{debounceLoader || 'loading...'}</div>
+        <div
+          ref={menu}
+          className={`datalist-items ${dropdownClassName ||
+            'default-datalist-items'}`}
+          role="dialog"
+          aria-label="Dropdown menu"
+        >
+          <div className={itemClassName}>{debounceLoader || 'loading...'}</div>
+        </div>
       );
     }
     if (reachedRequiredLength && visible) {
-      return renderItems();
+      return (
+        <div
+          ref={menu}
+          className={`datalist-items ${dropdownClassName ||
+            'default-datalist-items'}`}
+          role="dialog"
+          aria-label="Dropdown menu"
+        >
+          {renderItems()}
+        </div>
+      );
     }
     return undefined;
   }, [
@@ -388,6 +413,7 @@ const DataListInput = ({
     requiredInputLength,
     isMatchingDebounced,
     visible,
+    dropdownClassName,
     itemClassName,
     debounceLoader,
     renderItems,
@@ -406,15 +432,7 @@ const DataListInput = ({
         value={currentInput}
         aria-label="Search"
       />
-      <div
-        ref={menu}
-        className={`datalist-items ${dropdownClassName ||
-          'default-datalist-items'}`}
-        role="dialog"
-        aria-label="Dropdown menu"
-      >
-        {dropDown}
-      </div>
+      {dropDown}
     </div>
   );
 };
@@ -437,12 +455,14 @@ DataListInput.propTypes = {
   activeItemClassName: PropTypes.string,
   requiredInputLength: PropTypes.number,
   clearInputOnSelect: PropTypes.bool,
+  clearInputOnClick: PropTypes.bool,
   suppressReselect: PropTypes.bool,
   dropDownLength: PropTypes.number,
-  initialValue: PropTypes.string,
+  value: PropTypes.string,
   debounceTime: PropTypes.number,
   debounceLoader: PropTypes.node,
   onInput: PropTypes.func,
+  onClick: PropTypes.func,
 };
 
 DataListInput.defaultProps = {
@@ -454,14 +474,16 @@ DataListInput.defaultProps = {
   activeItemClassName: '',
   requiredInputLength: 0,
   clearInputOnSelect: false,
+  clearInputOnClick: false,
   suppressReselect: true,
   dropDownLength: Infinity,
-  initialValue: '',
+  value: undefined,
   debounceTime: 0,
   debounceLoader: undefined,
   onDropdownOpen: () => {},
   onDropdownClose: () => {},
   onInput: () => {},
+  onClick: () => {},
 };
 
 export default DataListInput;
