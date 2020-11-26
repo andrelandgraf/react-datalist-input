@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
+import DataListInput from 'react-datalist-input';
 import csvFile from './data.csv';
 
 import './App.css';
-import DataListInput from './DataListInput';
 
 // eslint-disable-next-line no-unused-vars
 const data = [
