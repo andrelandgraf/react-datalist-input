@@ -1,6 +1,6 @@
 {
   "name": "react-datalist-input",
-  "version": "2.1.1",
+  "version": "2.2.1",
   "description": "This package provides a react component as follows: an input field with a drop down menu to pick a possible option based on the current input.",
   "main": "./dist/DataListInput.js",
   "files": [
@@ -55,17 +55,17 @@
     "jest": "^26.0.1",
     "prettier": "^1.19.1",
     "prop-types": "^15.7.2",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "rollup": "^2.16.1",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-jsx": "^1.0.3",
     "rollup-plugin-sass": "^1.2.2"
   },
   "peerDependencies": {
-    "prop-types": "^15.6.0",
-    "react": "^16.0.0",
-    "react-dom": "^16.0.0"
+    "prop-types": "^15.7.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
   },
   "scripts": {
     "test": "jest",

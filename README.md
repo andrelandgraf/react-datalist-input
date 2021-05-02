@@ -27,6 +27,10 @@ The documentation below mainly applies for both versions but will be updated bas
 
 ### Changelog
 
+#### Version 2.2.0
+
+- update React peer-dependency version to 17.0.2
+
 #### Version 2.1.0
 
 Motivation: [issue 23](https://github.com/andrelandgraf/react-datalist-input/issues/23)
