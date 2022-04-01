@@ -1,48 +1,135 @@
-## Info
+![Simple demo of DatalistInput](/media/demo.gif)
 
-This package provides a single React component. The component contains an input field with a drop down menu to pick a possible option based on the current input as a React component.
+# react-datalist-input
 
-Have a look at [w3schools.com](https://www.w3schools.com/howto/howto_js_autocomplete.asp) to see how you can do something similar with pure html, css, and js. For more information about React and the ecosystem see this [guide](https://reactjs.org/docs/getting-started.html).
+react-datalist-input provides a React datalist/combobox component called DatalistInput. The component contains an input field with a dropdown menu of suggestions based on the current input.
 
-## Demo
+_DatalistInput is intended to be easy to use and comes with default styling:_
 
-Check it out on [my personal website](https://andre-landgraf.cool/uses)!
+```jsx
+import DatalistInput from 'react-datalist-input';
+import 'react-datalist-input/dist/style.css';
 
-## Feedback
+const YourComponent = () => (
+  <DatalistInput
+    placeholder="Chocolate"
+    label="Select ice cream flavor"
+    onSelect={(item) => console.log(item.value)}
+    items={[
+      { id: 'Chocolate', value: 'Chocolate' },
+      { id: 'Coconut', value: 'Coconut' },
+      { id: 'Mint', value: 'Mint' },
+      { id: 'Strawberry', value: 'Strawberry' },
+      { id: 'Vanilla', value: 'Vanilla' },
+    ]}
+  />
+);
+```
 
-Feel free to get inspired and more importantly please provide [your feedback](https://github.com/andrelandgraf/react-datalist-input/issues) on structure and style.
+_But DatalistInput is also intented to be easy to extend:_
 
-### Using Gatsby or Next.js?
+```jsx
+import DatalistInput, { useComboboxControls } from 'react-datalist-input';
 
-This component is not compatible with server-side rendering since it has css bundled with it.
+const YourComponent = () => {
+  const { setValue, value } = useComboboxControls({ initialValue: 'Chocolate' });
 
-I created a plain version of this package without css. Find more information [here](https://www.npmjs.com/package/react-plain-datalist-input).
+  return (
+    <DatalistInput
+      value={value}
+      setValue={setValue}
+      label="Select ice cream flavor"
+      showLabel={false}
+      items={[...]}
+      onSelect={(item) => {
+        setValue(''); // Custom behavior: Clear input field once a value has been selected
+      }}
+    />
+  );
+};
+```
+
+## Installation
+
+**Note: React 18 required!** Version 3.0.0 utilizes React 18. If you are using a React version below 18, install `react-datalist-input@2.2.1` instead! Find the documentation for version 2.2.1 [here](https://github.com/andrelandgraf/react-datalist-input/blob/bab05504c0dffa5f9343f2fcb5f075a38bad2512/README.md).
+
+### npm
+
+```bash
+npm i react-datalist-input
+```
+
+### yarn
+
+```bash
+yarn add react-datalist-input
+```
+
+## When to use this package (and when not to use it)?
+
+TL;DR:
+
+- You want a dropdown of suggestions and not a select element.
+- You tried the datalist HTML 5 element but it doesn't offer the control you need.
+
+There are [various kinds of dropdown UI controls](https://adrianroselli.com/2020/03/stop-using-drop-down.html). This package implements one of them - the combobox control - as defined by [WAI-ARIA 1.2](https://www.w3.org/TR/wai-aria-1.2/#combobox).
+
+A combobox renders a list of suggested values based on an input field. The user can select an option of the list to autocomplete the input field or type in a value that is not in the list. This is the main difference to the [select control](<[select](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select)>), where the user must pick a value from the list. You can read more about the differences on [vitalflux.com](https://vitalflux.com/difference-select-datalist/).
+
+If you don't care about custom functionality or advanced styling, consider using the native [datalist](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist) HTML5 element. If you require more control, then this package is for you!
+
+You can also build something tailored to your own use case from scratch! Have a look at [w3schools.com](https://www.w3schools.com/howto/howto_js_autocomplete.asp) to see how you create a autocomplete control with pure HTML, CSS, and JS.
+
+## ARIA
+
+This package follows the [WAI-ARIA 1.2](https://www.w3.org/TR/wai-aria-1.2/) specification. Be aware that version 1.2 is still in development. If you require a more battle-tested ARIA implementation, consider using [Reach UI](https://reach.tech/combobox/) instead.
+
+This package does not implement the optional `aria-activedescendant` property but rather programatically shifts focus to the active item. This might be up to change in the future!
+
+## Feedback & Issues
+
+Please provide your [feedback](https://github.com/andrelandgraf/react-datalist-input/issues) on GitHub!
 
 ## Versions
 
-- Version 2.x.x serves a functional component using hooks
-- Version 1.x.x serves a class component
+- Version 3.x.x is written in TypeScript and requires React 18.
+- Version 2.x.x serves a functional component using hooks.
+- Version 1.x.x serves a class component.
 
-The documentation below mainly applies for both versions but will be updated based on version 2.x.x updates in the future.
+The documentation below only applies to the latest version. Please find earlier versions of the documentation on [GitHub](https://github.com/andrelandgraf/react-datalist-input), e.g. version [2.2.1](https://github.com/andrelandgraf/react-datalist-input/blob/bab05504c0dffa5f9343f2fcb5f075a38bad2512/README.md).
 
 ### Changelog
 
+### Version 3.0.0
+
+Full refactor of react-datalist-input.
+
+- Rewritten in TypeScript
+- Implements WAI-ARIA 1.2
+- Takes advantage of React 18 useDeferredValue and useId
+- Replaces custom debounce with React 18 useDeferredValue
+- New default styles using CSS variables
+- Exposes helper hooks
+- Exposes underlying components for full customization
+
+**Note:** Be aware that version 3.0.0 includes breaking changes. Version 3.0.0 deprecates some properties from the DatalistInput component but all but one use case still be implemented in the new version (in a more intuitive way using the `useComboboxControls` hook). The only property that has been fully depcreated is `requiredInputLength`. Please create an [Issue](https://github.com/andrelandgraf/react-datalist-input/issues) if you need it!
+
 #### Version 2.2.0
 
-- update React peer-dependency version to 17.0.2
+- Update React peer-dependency version to 17.0.2
 
 #### Version 2.1.0
 
-Motivation: [issue 23](https://github.com/andrelandgraf/react-datalist-input/issues/23)
+Motivation: [Issue 23](https://github.com/andrelandgraf/react-datalist-input/issues/23)
 
 Offer optional value prop, in case the user requires full control to change/clear the input value based on side effects
 
 Changes:
 
-- deprecates optional `initialValue` prop
-- introduces optional `value` prop instead (default undefined)
-- introduces optional `clearOnClickInput` prop (default false)
-- introduces optional `onClick` lifecycle method prop (default empty function)
+- Deprecates optional `initialValue` prop
+- Introduces optional `value` prop instead (default undefined)
+- Introduces optional `clearOnClickInput` prop (default false)
+- Introduces optional `onClick` lifecycle method prop (default empty function)
 
 #### Version 2.0.0
 
@@ -51,54 +138,147 @@ Changes:
 - refactors component to functional component using hooks
 - adds `useStateRef` to reduce re-renders and boost performance
 
-## Installation
-
-### Installation via npm
-
-```bash
-npm i react-datalist-input
-```
+## Usage
 
 ### Basic Usage
 
-```javascript
-import React, { useState, useMemo, useCallback } from "react";
-import DataListInput from "react-datalist-input";
+```jsx
+import React, { useState, useMemo, useCallback } from 'react';
+// Import the DataListInput component
+import DataListInput from 'react-datalist-input';
+// Tntegrate the css file if you want to use the default styling
+import 'react-datalist-input/dist/style.css';
 
-const YourComponent = ({ myValues }) => {
-  // selectedItem
-  const [item, setItem] = useState();
+const options = [
+  { name: 'Chocolate' },
+  { name: 'Coconut' },
+  { name: 'Mint' },
+  { name: 'Strawberry' },
+  { name: 'Vanilla' },
+];
+
+const YourComponent = ({ options }) => {
+  const [item, setItem] = useState(); // The selectedItem
 
   /**
-   * your callback function gets called if the user selects one option out of the drop down menu
+   * The onSelect callback function is called if the user selects one option out of the dropdown menu.
    * @param selectedItem object (the selected item / option)
    */
   const onSelect = useCallback((selectedItem) => {
-    console.log("selectedItem", selectedItem);
+    console.log('selectedItem', selectedItem);
+    setItem(selectedItem);
   }, []);
 
-  // the array you want to pass to the react-data-list component
-  // key and label are required properties
+  // Make sure each option has an unique id and a value
   const items = useMemo(
     () =>
-      myValues.map((oneItem) => ({
-        // required: what to show to the user
-        label: oneItem.name,
-        // required: key to identify the item within the array
-        key: oneItem.id,
-        // feel free to add your own app logic to access those properties in the onSelect function
-        someAdditionalValue: oneItem.someAdditionalValue,
-        // or just keep everything
-        ...oneItem,
+      options.map((option) => ({
+        // required: id and value
+        id: option.name,
+        value: option.name,
+        // optional: label, node
+        // label: option.name, // use a custom label instead of the value
+        // node: option.name, // use a custom ReactNode to display the option
+        ...option, // pass along any other properties, will be available in your onSelect callback
       })),
-    [myValues]
+    [yourItems],
   );
 
   return (
-    <DataListInput
-      placeholder="Select an option from the drop down menu..."
+    <DatalistInput label="Select your favorite flavor" placeholder="Chocolate" items={items} onSelect={onSelect} />
+  );
+};
+```
+
+### Styling
+
+For simple use cases, you can use the default styling provided by this package: `import 'react-datalist-input/dist/style.css'`.
+
+However, you can also customize the styling by providing your own CSS! Instead of importing the default stylesheet, create your own one. The following classes are available:
+
+- `react-datalist-input__container`: For the container element.
+- `react-datalist-input__textbox`: For the input element.
+- `react-datalist-input__listbox`: For the dropdown list.
+- `react-datalist-input__listbox-option`: For each option in the dropdown list.
+
+**Note:** To get up and running quickly, just copy-paste the default stylesheet and adapt the pieces you need.
+
+#### Tailwind CSS / Utility Classes
+
+Alternatively, you can also pass custom classes to each element of the DatalistInput component by using the following props:
+
+- `className`: For the container element.
+- `inputProps["className"]`: For the input element.
+- `listboxProps["className"]`: For the dropdown list.
+- `listboxOptionProps["className"]`: For each option in the dropdown list.
+- `isExpandedClassName`: Applied to the dropdown list if it is expanded.
+- `isCollapsedClassName`: Applied to the dropdown list if it is collapsed. !If provided, you must manage the hiding of the dropdown list yourself!
+
+### Custom Filtering
+
+You can chain custom filters to filter the list of options displayed in the dropdown menu.
+
+For instance, display only the first three items in the list:
+
+```jsx
+// Import the default filter startWithValueFilter
+import DatalistInput, { startsWithValueFilter } from '../combobox';
+
+const YourComponent = () => {
+  // Custom filter: Only display the first 3 items
+  const limitOptionsFilter: Filter = useCallback((options, value) => options.slice(0, 3), [selectedItems]);
+
+  // First we filter by the value using the default filter, then we add a custom filter.
+  const filters = [startsWithValueFilter, customFilter];
+
+  return <DatalistInput label="Select ice cream flavor" items={items} filters={filters} />;
+};
+```
+
+### Fine-grained Control
+
+Use the `useComboboxControls` hook to get fine-grained control over the input value and the dropdown expansion states or just manage the value and expanded state yourself!
+
+In this example, we utilize DatalistInput to act as a multi-select control:
+
+```jsx
+import { DatalistInput, useComboboxControls, startsWithValueFilter } from '../combobox';
+
+const YourComponent = () => {
+  // useComboboxControls returns state and handlers for the input value and the dropdown expansion state
+  const { isExpanded, setIsExpanded, setValue, value } = useComboboxControls({ isExpanded: true });
+  const [selectedItems, setSelectedItems] = useState<Item[]>([]);
+
+  useEffect(() => {
+    // Abitrary logic: Close select after 3 selections
+    if (selectedItems.length === 3) {
+      setIsExpanded(false);
+    }
+  }, [selectedItems]);
+
+  // Custom filter: Filter displayed items based on previous selections
+  const customFilter: Filter = useCallback(
+    (options, value) => {
+      return options.filter((o) => !selectedItems.find((s) => s.id === o.id));
+    },
+    [selectedItems],
+  );
+
+  return (
+    <DatalistInput
+      isExpanded={isExpanded}
+      setIsExpanded={setIsExpanded}
+      value={value}
+      setValue={setValue}
+      onSelect={(item) => {
+        if (selectedItems.length >= 3) setSelectedItems([item]);
+        else setSelectedItems((prevItems) => [...prevItems, item]); // Add the selected item to the list of selected items
+        setValue(''); // Clear the input value after selection
+        setIsExpanded(true); // Keep dropdown open after selection
+      }}
+      label="Select ice cream flavor"
       items={items}
-      onSelect={onSelect}
+      filters={[customFilter, startsWithValueFilter]}
     />
   );
 };
@@ -106,201 +286,69 @@ const YourComponent = ({ myValues }) => {
 
 ## Properties
 
-| Prop                                                        | Type     | Required/Optional | Default Value              |
-| ----------------------------------------------------------- | -------- | ----------------- | -------------------------- |
-| [items](#markdown-header-items)                             | array    | required          | -                          |
-| [onSelect](#markdown-header-onSelect)                       | function | required          | -                          |
-| [match](#markdown-header-match)                             | function | optional          | internal matching function |
-| [onDropdownOpen](#markdown-header-onDropdownOpen)           | function | optional          | -                          |
-| [onDropdownClose](#markdown-header-onDropdownClose)         | function | optional          | -                          |
-| [placeholder](#markdown-header-placeholder)                 | string   | optional          | ''                         |
-| [itemClassName](#markdown-header-itemClassName)             | string   | optional          | -                          |
-| [activeItemClassName](#markdown-header-activeItemClassName) | string   | optional          | -                          |
-| [inputClassName](#markdown-header-inputClassName)           | string   | optional          | -                          |
-| [dropdownClassName](#markdown-header-dropdownClassName)     | string   | optional          | -                          |
-| [requiredInputLength](#markdown-header-requiredInputLength) | number   | optional          | 0                          |
-| [clearInputOnSelect](#markdown-header-clearInputOnSelect)   | boolean  | optional          | false                      |
-| [clearInputOnClick](#markdown-header-clearInputOnClick)     | boolean  | optional          | false                      |
-| [suppressReselect](#markdown-header-suppressReselect)       | boolean  | optional          | true                       |
-| [dropDownLength](#markdown-header-dropDownLength)           | number   | optional          | infinite                   |
-| [value](#markdown-header-value)                             | string   | optional          | undefined                  |
-| [debounceTime](#markdown-header-debounceTime)               | number   | optional          | 0                          |
-| [debounceLoader](#markdown-header-debounceLoader)           | string   | optional          | 'Loading...'               |
-| [onInput](#markdown-header-onInput)                         | function | optional          | -                          |
-| [onClick](#markdown-header-onClick)                         | function | optional          | -                          |
+DatalistInput accepts the following properties:
 
-### <a name="markdown-header-items"></a>items
+### Required Properties
 
-- <b>Required</b> property!
-- The array of options for the drop down menu.<br>
-- Every item inside the array needs to have following properties:
-  - key : an id that identifies the item within the array
-  - label: the label that will be shown in the drop down menu
+- `items`: An array of objects of type `Item` with the following properties:
+  - id: Required. The unique identifier for the option.
+  - value: Required. The value of the option.
+  - label: Optional. The label of the option.
+  - node: Optional. A React node to display the option.
+  - ...: Any other properties you want to pass along to your onSelect callback.
+- `label`: The label of the input. Can be of type ReactNode or string.
+- `showLabel`: Whether to show the label. If not provided, defaults to true. If false, the label will not be shown but the label property must be of type string and will be supplied to the `aria-label` attribute.
 
-### <a name="markdown-header-onSelect"></a>onSelect
+### Optional Properties
 
-- <b>Required</b> property!
-- The callback function that will be called if the user selects one item of the drop down menu.
-- Gets only called if the item changes. Selecting the same item twice will only trigger the function once (the first time).
-- Parameter: (selectedKey)
-  - selectedKey: the Key Property of the item that the user selected
+- `placeholder`: The placeholder of the input.
+- `value`: The value of the input.
+- `setValue`: A function to set the value of the input.
+- `isExpanded`: Whether the dropdown is expanded.
+- `setIsExpanded`: A function to set the expanded state of the dropdown.
+- `onSelect`: A callback function that is called when the user selects an option.
+- `filters`: An array of filters of type `Filter` that are applied to the list of options displayed in the dropdown menu.
+- `selectedItem`: The currently selected item. Important for ARIA. DatalistInput keeps track of the last selected item. You only need to provide this prop if you want to change the selected item outside of the component.
+- `inputProps`: An object of props to pass to the combobox input element.
+- `listboxProps`: An object of props to pass to the listbox element.
+- `listboxOptionProps`: An object of props to pass to the listbox option elements.
+- `isExpandedClassName`: The class name applied to the listbox element if it is expanded.
+- `isCollapsedClassName`: The class name applied to the listbox element if it is collapsed.
+- `isExpandedStyle`: The inline style applied to the listbox element if it is expanded.
+- `isCollapsedStyle`: The inline style applied to the listbox element if it is collapsed.
+- `className`: The class name applied to the container element.
+- ...: Any other properties you want to pass along to the container div element.
 
-### <a name="markdown-header-match"></a>match
+## Utilities
 
-- Pass a match function as stated above for creating your own matching algorithm for the autocomplete functionality.
-- Parameter: (currentInput, item)
+The following utilities are exported together with the DatalistInput component:
 
-  - currentInput: String, the current user input typed into the input field
-  - item: Object, the item of the items array (with key and label properties)
+### Utilities used together with DatalistInput
 
-- Default match function:
+- `startsWithValueFilter`: A default filter that filters the list of options by the input value.
+- `useComboboxControls`: A hook to get the state and handlers for the input value and the dropdown expansion state.
 
-```javascript
-/**
- * default function for matching the current input value (needle) and the values of the items array
- * @param currentInput String (the current user input)
- * @param item (one item of the items array)
- * @returns {boolean}
- */
-const match = (currentInput, item) =>
-  item.label.substr(0, currentInput.length).toUpperCase() ===
-  currentInput.toUpperCase();
-```
+### Utilities to implement a custom DatalistInput component
 
-- If you are looking to have the same behavior as the HTML element [datalist](https://developer.mozilla.org/de/docs/Web/HTML/Element/datalist), use a match function like follows:
+- `useComboboxHelpers`: A low-level hook, which returns a set of callbacks and event handlers for the DatalistInput component.
+- `useFilters`: A hook that applies an array of filters to an array of items based on the current value.
+- `useComboboxContext`: A low-level hook that returns the Combobox context value.
+- `Combobox`: A low-level component which is wrapped by DatalistInput. It also acts as the Combobox ContextProvider.
+- `Combobox.ComboboxInput`: A low-level component that provides the input field. It has to be wrapped by the Combobox component.
+- `Combobox.Listbox`: A low-level component that provides the listbox. It has to be wrapped by the Combobox component.
+- `Combobox.ListboxOption`: A low-level component that provides one listbox option. It has to be wrapped by the Combobox component.
+- `Combobox.Highlight`: A low-level component that provides highlighting of the listbox option values based on the current input value. It has to be wrapped by the Combobox component.
 
-```javascript
-const match = (currentInput, item) =>
-  item.label.toLowerCase().includes(currentInput.toLowerCase());
-```
+## Types
 
-### <a name="markdown-header-onDropdownOpen"></a>onDropdownOpen
+The following types are exported from react-datalist-input and available for use in your components:
 
-- The callback function that will be called after opening the drop down menu.
-- It will fire only once and not be called again after new input.
-
-### <a name="markdown-header-onDropdownClose"></a>onDropdownClose
-
-- The callback function that will be called after closing the drop down menu.
-
-### <a name="markdown-header-placeholder"></a>placeholder
-
-- The placeholder that will be shown inside the input field.
-- Default is an empty string
-
-### <a name="markdown-header-itemClassName"></a>itemClassName
-
-- Additional classes to style each input field in the dropdown menu.
-- Default is an empty string
-- Removes the default styling if set
-
-### <a name="markdown-header-activeItemClassName"></a>activeItemClassName
-
-- Additional classes to style the active input field.
-- Default is an empty string
-- Removes the default styling if set
-
-### <a name="markdown-header-inputClassName"></a>inputClassName
-
-- Additional classes to style the input field.
-- Default is an empty string
-- Removes the default styling if set
-
-### <a name="markdown-header-dropdownClassName"></a>dropdownClassName
-
-- Additional classes to style the dropdown box.
-- Default is an empty string
-- Adds on the required styling (e.g. position:absolute)
-- Removes the default styling if set
-
-### <a name="markdown-header-requiredInputLength"></a>requiredInputLength
-
-- Number to specify the threshold until when the dropdown menu should appear.
-- Example `requiredInputLength=3`, only if the user input is longer than 2 characters, the dropdown menu will appear.
-- Default is zero.
-
-### <a name="markdown-header-clearInputOnSelect"></a>clearInputOnSelect
-
-- Should the input field be cleared on select or filled with selected item?
-- Default is false.
-- ❗ This property does not work if the prop `value` is set, you have to use the lifecycle method `onSelect` and set your value state on your own.
-
-### <a name="markdown-header-clearInputOnClick"></a>clearInputOnClick
-
-- Should the input field be cleared on click or filled with selected item?
-- Default is false.
-- ❗ This property does not workif the prop `value` is set, you have to use the lifecycle method `onClick` and set your value state on your own.
-
-### <a name="markdown-header-suppressReselect"></a>suppressReselect
-
-- If suppressReselect is set to false, selecting the same item again, it will trigger another onSelect callback call.
-- Default is true.
-
-### <a name="markdown-header-dropDownLength"></a>dropDownLength
-
-- Only display the first `dropDownLength` matches in the dropdown. Useful if the array is really big.
-- Number to specify max length of drop down.
-- Default is Infinity.
-
-### <a name="markdown-header-value"></a>value
-
-- `initialValue` is deprecated, use `value` instead
-- `value` can be used to specify and override the value of the input field
-- For example, `value="hello world"` will print `hello world` into the input field
-- Default is undefined
-- ❗ If you want to clean the input field based on side effects use `value` of empty string.
-- ❗ Use `value` only if you want complete control over the value of the input field. `react-datalist-input` will priotize whatever value is set over anything the user selects or has selected. If you use `value`, you will have to update it on your own using the `onClick`, `onInput`, and`onSelect` lifecycle methods.
-- ❗ Don't confuse this with a placeholder (see placerholder prop). This property sets the actual value of the input field.
-- ❗ The flags `clearInputOnSelect` and `clearInputOnClick` won't work and have to be implemented via the mentioned lifecycle methods.
-
-The following `useEffect` is used to decide if the component should update with the new `value` property:
-
-```javascript
-useEffect(() => {
-  // the parent component can pass its own value prop that will override the internally used currentInput
-  // this will happen only after we are have finished the current computing step and the dropdown is invisible
-  // (to avoid confusion of changing input values for the user)
-  /*
-   * we have to distinguish undefined and empty string value
-   * value == undefined => not set, use internal current input
-   * value !== undefined => value set, use value and override currentInput
-   * this enables value === '' to clear the input field
-   */
-  const isValuePropSet = value !== undefined;
-  const isValueDifferent = currentInputRef.current !== value;
-  // is drop down visible or are we currently matching based on user input
-  const isMatchingRunning = visible || isMatchingDebounced;
-  if (isValuePropSet && isValueDifferent && !isMatchingRunning) {
-    setCurrentInput(value);
-  }
-}, [visible, isMatchingDebounced, value, setCurrentInput, currentInputRef]);
-```
-
-### <a name="markdown-header-debounceTime"></a>debounceTime
-
-- Use `debounceTime` to define a debounce timeout time (in milliseconds) before the matching algorithm should be called
-- New user input will trigger a new call to the debounce step and will clear every unresolved timeout
-- For example, `debounceTime={1000}` will call the matching algorithm one second after the last user input
-- This is useful if `items` is very large and/or the `match`-algorithm is doing some heavier operations
-- `debounceTime` may improve the user experience by reducing lag times as it reduces the calls to the matching and rendering of the dropdown.
-- Be careful, using too much debounceTime will slow down the response time of this component.
-- If you still have performance issues even when using a `debounceTime={3000}` or higher, you might want to consider using another package / user input instead. Think about a "search/look-up"-button next to your input field or even consider running the search functionality in a dedicated backend.
-- Default is zero which means no timeout/debouncing is used.
-
-### <a name="markdown-header-debounceLoader"></a>debounceLoader
-
-- Only in use if debounceTime is set
-- Of type node which can be anything that react can render and will be shown as a loading bar
-- Default is string "loading...".
-
-### <a name="markdown-header-onInput"></a>onInput
-
-- The callback function that will be called whenever the user types into the input field
-- Exposing this function supports use cases like resetting states on empty input field
-- The callback will receive the `newValue` of type string from `event.target.value`
-
-### <a name="markdown-header-onClick"></a>onClick
-
-- The callback function that will be called whenever the user clicks the input field
-- This callback is exposed so you can implement `clearOnClickInput` on your own if you pass the `value` prop
-- The callback will receive the `currentInput` of type string based on `clearOnClickInput` and the last user input
+- `Filter`: A filter which can be added to the filters property of the DatalistInput component.
+- `Item`: An item that can be added to the items property of the DatalistInput component.
+- `DatalistInputProps`: The props accepted by the DatalistInput component.
+- `ComboxboxProps`: The props accepted by the low-level Combobox component.
+- `ComboboxInputProps`: The props accepted by the low-level ComboboxInput component.
+- `ListboxProps`: The props accepted by the low-level Listbox component.
+- `ListboxOptionProps`: The props accepted by the low-level ListboxOption component.
+- `HighlightProps`: The props accepted by the low-level Highlight component.
+- `useComoboxHelpersConfigParams`: The params for the low-level `useComboboxHelpers` hook.

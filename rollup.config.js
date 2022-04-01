@@ -1,24 +1,22 @@
-import babel from 'rollup-plugin-babel';
-import sass from 'rollup-plugin-sass';
-import jsx from 'rollup-plugin-jsx';
+import commonjs from '@rollup/plugin-commonjs';
+import peerDepsExternal from 'rollup-plugin-peer-deps-external';
+import typescript from 'rollup-plugin-typescript2';
 
 import pkg from './package.json';
 
 export default {
-  input: 'src/DataListInput.jsx',
+  input: 'src/index.tsx',
   output: [
     {
       file: pkg.main,
       format: 'cjs',
-      exports: 'named',
       sourcemap: true,
-      strict: false,
+    },
+    {
+      file: pkg.module,
+      format: 'esm',
+      sourcemap: true,
     },
   ],
-  plugins: [
-    babel({ exclude: 'node_modules/**' }),
-    sass({ insert: true }),
-    jsx({ factory: 'React.createElement' }),
-  ],
-  external: ['react', 'react-dom', 'prop-types'],
+  plugins: [peerDepsExternal(), commonjs({ exclude: 'node_modules/*' }), typescript()],
 };

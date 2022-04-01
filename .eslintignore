@@ -1,3 +1,4 @@
 node_modules
-lib
-tests/demo-app
+dist
+tests/
+media/
