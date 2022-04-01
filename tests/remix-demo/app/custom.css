@@ -1,0 +1,19 @@
+.datalist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.datalist-input {
+  border: 1px solid blue;
+  border-radius: 3px;
+  padding: 5px;
+  margin: 5px;
+}
+
+.datalist-list {
+  border: 1px solid red;
+  border-radius: 3px;
+  padding: 5px;
+  margin: 5px;
+}
