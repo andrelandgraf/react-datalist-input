@@ -540,6 +540,7 @@ const useInternalSelectedItem = (item?: Item): [Item | undefined, (item: Item) =
   return [selectedItem, setSelectedItem];
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 interface Item extends Record<string, any> {
   id: string;
   value: string; // Used for filtering. Used for displaying and highlighting if node not provided.
@@ -742,7 +743,7 @@ const DatalistInput = forwardRef<HTMLDivElement, PropsWithRef<DatalistInputProps
                 ...listboxProps?.style,
               }}
             >
-              {filteredItems.map((item, i) => (
+              {filteredItems.map((item) => (
                 <ListboxOption
                   {...listboxOptionProps}
                   aria-label={item.label || item.value}
