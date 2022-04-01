@@ -1,0 +1,11 @@
+.eslintrc.js
+.eslintignore
+.gitignore
+.prettierrc.js
+tsconfig.json
+jest.config.js
+rollup.config.json
+tests/
+media/
+node_modules/
+.vscode/
