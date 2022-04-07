@@ -8,7 +8,7 @@ _DatalistInput is intended to be easy to use and comes with default styling:_
 
 ```jsx
 import DatalistInput from 'react-datalist-input';
-import 'react-datalist-input/dist/style.css';
+import 'react-datalist-input/dist/styles.css';
 
 const YourComponent = () => (
   <DatalistInput
@@ -147,7 +147,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 // Import the DataListInput component
 import DataListInput from 'react-datalist-input';
 // Tntegrate the css file if you want to use the default styling
-import 'react-datalist-input/dist/style.css';
+import 'react-datalist-input/dist/styles.css';
 
 const options = [
   { name: 'Chocolate' },
@@ -192,7 +192,7 @@ const YourComponent = ({ options }) => {
 
 ### Styling
 
-For simple use cases, you can use the default styling provided by this package: `import 'react-datalist-input/dist/style.css'`.
+For simple use cases, you can use the default styling provided by this package: `import 'react-datalist-input/dist/styles.css'`.
 
 However, you can also customize the styling by providing your own CSS! Instead of importing the default stylesheet, create your own one. The following classes are available:
 
