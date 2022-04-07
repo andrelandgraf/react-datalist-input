@@ -112,17 +112,15 @@ const useComboboxContext = () => useContext(ComboboxContext);
 /**
  * Use this hook to control the open state and input value of the combobox.
  * Pass the properties down to the DataListInput component.
- * The isExpandedRef property can be ignored. It is for advanced use cases only.
  */
 const useComboboxControls = ({ initialValue = '', ...params }: { isExpanded: boolean; initialValue?: string }) => {
-  const [isExpanded, setIsExpanded, isExpandedRef] = useStateRef(params.isExpanded);
+  const [isExpanded, setIsExpanded] = useStateRef(params.isExpanded);
   const [value, setValue] = useState(initialValue);
   return {
     isExpanded,
     value,
     setIsExpanded,
     setValue,
-    isExpandedRef,
   };
 };
 
@@ -346,6 +344,7 @@ const ComboboxInput = forwardRef<HTMLInputElement, PropsWithRef<ComboboxInputPro
     );
   },
 );
+ComboboxInput.displayName = 'ComboboxInput';
 
 interface HighlightProps extends HTMLAttributes<HTMLElement> {
   currentInput?: string;
@@ -375,7 +374,7 @@ const Highlight: React.FC<PropsWithChildren<HighlightProps>> = ({
       <>
         {children.substring(0, index)}
         {as === 'mark' ? (
-          <mark {...props}>{children.substring(index, inputLength)}</mark>
+          <mark {...props}>{children.substring(index, index + inputLength)}</mark>
         ) : (
           <span {...props}>{children.substring(index, inputLength)}</span>
         )}
@@ -409,6 +408,7 @@ const ListboxOption = forwardRef<HTMLLIElement, PropsWithRef<ListboxOptionProps>
     );
   },
 );
+ListboxOption.displayName = 'ListboxOption';
 
 type ListboxProps = HTMLAttributes<HTMLUListElement>;
 
@@ -443,6 +443,7 @@ const Listbox = forwardRef<HTMLUListElement, PropsWithRef<ListboxProps>>(({ chil
     </ul>
   );
 });
+Listbox.displayName = 'Listbox';
 
 /*
  * Combobox - high-level component
@@ -537,6 +538,7 @@ const useInternalSelectedItem = (item?: Item): [Item | undefined, (item: Item) =
   return [selectedItem, setSelectedItem];
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 interface Item extends Record<string, any> {
   id: string;
   value: string; // Used for filtering. Used for displaying and highlighting if node not provided.
@@ -572,19 +574,6 @@ const useFilters = (
 
   return [filtered, filteredRef];
 };
-
-const getTextboxTitle = (isExpanded: boolean, length: number, title?: string) => {
-  const formattedTitle = title ? (title[title.length - 1] === '.' ? title : title + '.') : undefined;
-  const ariaContent = `Listbox is ${isExpanded ? 'expanded' : 'closed'}. ${length} ${
-    length === 1 ? 'option matches' : 'options match'
-  } your input. Use ArrowDown to navigate between options.`;
-  return formattedTitle ? `${formattedTitle} ${ariaContent}` : ariaContent;
-};
-
-// type LabelProps<T> = {
-//   showLabel: T;
-//   label?: T extends true ? ReactNode : string;
-// };
 
 type LabelProps =
   | {
@@ -723,7 +712,6 @@ const DatalistInput = forwardRef<HTMLDivElement, PropsWithRef<DatalistInputProps
             onChange={handleWith(handleChange, inputProps?.onChange)}
             onKeyDown={handleWith(handleKeyDownOnInput, inputProps?.onKeyDown)}
             aria-label={!showLabel && typeof label === 'string' ? label : undefined}
-            title={getTextboxTitle(internalIsExpanded, filteredItems.length, inputProps?.title)}
             className={`react-datalist-input__textbox ${inputProps?.className}`}
           />
           {((filteredItems.length && internalIsExpanded) || isCollapsedClassName || isCollapsedStyle) && (
@@ -739,7 +727,7 @@ const DatalistInput = forwardRef<HTMLDivElement, PropsWithRef<DatalistInputProps
                 ...listboxProps?.style,
               }}
             >
-              {filteredItems.map((item, i) => (
+              {filteredItems.map((item) => (
                 <ListboxOption
                   {...listboxOptionProps}
                   aria-label={item.label || item.value}
@@ -760,6 +748,7 @@ const DatalistInput = forwardRef<HTMLDivElement, PropsWithRef<DatalistInputProps
     );
   },
 );
+DatalistInput.displayName = 'DatalistInput';
 
 export type {
   DatalistInputProps,

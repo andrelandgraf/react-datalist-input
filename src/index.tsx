@@ -112,17 +112,15 @@ const useComboboxContext = () => useContext(ComboboxContext);
 /**
  * Use this hook to control the open state and input value of the combobox.
  * Pass the properties down to the DataListInput component.
- * The isExpandedRef property can be ignored. It is for advanced use cases only.
  */
 const useComboboxControls = ({ initialValue = '', ...params }: { isExpanded: boolean; initialValue?: string }) => {
-  const [isExpanded, setIsExpanded, isExpandedRef] = useStateRef(params.isExpanded);
+  const [isExpanded, setIsExpanded] = useStateRef(params.isExpanded);
   const [value, setValue] = useState(initialValue);
   return {
     isExpanded,
     value,
     setIsExpanded,
     setValue,
-    isExpandedRef,
   };
 };
 
@@ -577,19 +575,6 @@ const useFilters = (
   return [filtered, filteredRef];
 };
 
-const getTextboxTitle = (isExpanded: boolean, length: number, title?: string) => {
-  const formattedTitle = title ? (title[title.length - 1] === '.' ? title : title + '.') : undefined;
-  const ariaContent = `Listbox is ${isExpanded ? 'expanded' : 'closed'}. ${length} ${
-    length === 1 ? 'option matches' : 'options match'
-  } your input. Use ArrowDown to navigate between options.`;
-  return formattedTitle ? `${formattedTitle} ${ariaContent}` : ariaContent;
-};
-
-// type LabelProps<T> = {
-//   showLabel: T;
-//   label?: T extends true ? ReactNode : string;
-// };
-
 type LabelProps =
   | {
       showLabel?: false;
@@ -727,7 +712,6 @@ const DatalistInput = forwardRef<HTMLDivElement, PropsWithRef<DatalistInputProps
             onChange={handleWith(handleChange, inputProps?.onChange)}
             onKeyDown={handleWith(handleKeyDownOnInput, inputProps?.onKeyDown)}
             aria-label={!showLabel && typeof label === 'string' ? label : undefined}
-            title={getTextboxTitle(internalIsExpanded, filteredItems.length, inputProps?.title)}
             className={`react-datalist-input__textbox ${inputProps?.className}`}
           />
           {((filteredItems.length && internalIsExpanded) || isCollapsedClassName || isCollapsedStyle) && (

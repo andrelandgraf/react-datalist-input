@@ -7,15 +7,13 @@ export const links: LinksFunction = () => {
   return [{ rel: 'stylesheet', href: comboboxStyles }];
 };
 
-const items = [
-  { id: 'Chocolate', value: 'Chocolate' },
-  { id: 'Coconut', value: 'Coconut' },
-  { id: 'Mint', value: 'Mint' },
-  { id: 'Strawberry', value: 'Strawberry' },
-  { id: 'Vanilla', value: 'Vanilla' },
-];
+const items = new Array(1000).fill(0).map((_, index) => ({
+  id: `${index}`,
+  value: `value ${index}`,
+}));
 
 export default function Index() {
+  console.log(items);
   return (
     <div
       style={{
@@ -33,8 +31,8 @@ export default function Index() {
           placeholder="Chocolate"
           items={items}
           onSelect={(i) => console.log(i)}
-          inputProps={{
-            onClick: (e) => console.log('CLICK', e),
+          listboxProps={{
+            style: { maxHeight: '300px', overflowY: 'scroll' },
           }}
         />
       </div>
