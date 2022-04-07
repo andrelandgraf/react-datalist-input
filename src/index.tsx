@@ -376,7 +376,7 @@ const Highlight: React.FC<PropsWithChildren<HighlightProps>> = ({
       <>
         {children.substring(0, index)}
         {as === 'mark' ? (
-          <mark {...props}>{children.substring(index, inputLength)}</mark>
+          <mark {...props}>{children.substring(index, index + inputLength)}</mark>
         ) : (
           <span {...props}>{children.substring(index, inputLength)}</span>
         )}
