@@ -113,9 +113,9 @@ const useComboboxContext = () => useContext(ComboboxContext);
  * Use this hook to control the open state and input value of the combobox.
  * Pass the properties down to the DataListInput component.
  */
-const useComboboxControls = ({ initialValue = '', ...params }: { isExpanded: boolean; initialValue?: string }) => {
-  const [isExpanded, setIsExpanded] = useStateRef(params.isExpanded);
-  const [value, setValue] = useState(initialValue);
+const useComboboxControls = (params?: { isExpanded: boolean; initialValue?: string }) => {
+  const [isExpanded, setIsExpanded] = useStateRef(params?.isExpanded);
+  const [value, setValue] = useState(params?.initialValue || '');
   return {
     isExpanded,
     value,

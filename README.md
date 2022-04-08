@@ -51,7 +51,7 @@ const YourComponent = () => {
 
 ## Installation
 
-**Note: React 18 required!** Version 3.0.0 utilizes React 18. If you are using a React version below 18, install `react-datalist-input@2.2.1` instead! Find the documentation for version 2.2.1 [here](https://github.com/andrelandgraf/react-datalist-input/blob/bab05504c0dffa5f9343f2fcb5f075a38bad2512/README.md).
+**Note: React 18 required!** Version 3.0.0 utilizes React 18. If you use React <=17, install `react-datalist-input@2.2.1` instead! Find the documentation for version 2.2.1 [here](https://github.com/andrelandgraf/react-datalist-input/blob/bab05504c0dffa5f9343f2fcb5f075a38bad2512/README.md).
 
 ### npm
 
@@ -78,7 +78,7 @@ A combobox renders a list of suggested values based on an input field. The user 
 
 If you don't care about custom functionality or advanced styling, consider using the native [datalist](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist) HTML5 element. If you require more control, then this package is for you!
 
-You can also build something tailored to your own use case from scratch! Have a look at [w3schools.com](https://www.w3schools.com/howto/howto_js_autocomplete.asp) to see how you create a autocomplete control with pure HTML, CSS, and JS.
+You can also build something tailored to your own use case from scratch! Have a look at [w3schools.com](https://www.w3schools.com/howto/howto_js_autocomplete.asp) to see how to create a autocomplete control with pure HTML, CSS, and JS.
 
 ## ARIA
 
@@ -149,6 +149,7 @@ import DataListInput from 'react-datalist-input';
 // Tntegrate the css file if you want to use the default styling
 import 'react-datalist-input/dist/styles.css';
 
+// Your data source
 const options = [
   { name: 'Chocolate' },
   { name: 'Coconut' },
@@ -158,7 +159,7 @@ const options = [
 ];
 
 const YourComponent = ({ options }) => {
-  const [item, setItem] = useState(); // The selectedItem
+  const [item, setItem] = useState(); // The selected item will be stored in this state.
 
   /**
    * The onSelect callback function is called if the user selects one option out of the dropdown menu.
@@ -222,7 +223,7 @@ For instance, display only the first three items in the list:
 
 ```jsx
 // Import the default filter startWithValueFilter
-import DatalistInput, { startsWithValueFilter } from '../combobox';
+import DatalistInput, { startsWithValueFilter } from 'react-datalist-input';
 
 const YourComponent = () => {
   // Custom filter: Only display the first 3 items
@@ -235,14 +236,50 @@ const YourComponent = () => {
 };
 ```
 
-### Fine-grained Control
+### Fine-grained Control Vol. 1 - Select
+
+Since all props of the input element are exposed, you can easily customize DatalistInput to act as an Select component.
+
+Just set the input field to readonly, adjust the filter to always show all options, and set the selected item as the new value of the input field:
+
+```tsx
+import { DatalistInput, useComboboxControls } from 'react-datalist-input';
+const items = [
+  { id: 'Chocolate', value: 'Chocolate' },
+  { id: 'Coconut', value: 'Coconut' },
+  { id: 'Mint', value: 'Mint' },
+  { id: 'Strawberry', value: 'Strawberry' },
+  { id: 'Vanilla', value: 'Vanilla' },
+];
+function YourComponent() {
+  // The useComboboxControls hook provides useful states so you don't have to define them yourself.
+  const { value, setValue } = useComboboxControls({ initialValue: 'Chocolate' }); // Same as: const [value, setValue] = useState("Chocolate");
+  return (
+    <DatalistInput
+      value={value}
+      onSelect={(item) => setValue(item.value)}
+      label="Select ice cream flavor"
+      items={items}
+      filters={[(items) => items]}
+      inputProps={{
+        title: 'Please select an ice cream flavor',
+        required: true,
+        pattern: `^(${items.map((i) => i.value).join('|')})$`,
+        readOnly: true,
+      }}
+    />
+  );
+}
+```
+
+### Fine-grained Control Vol. 2 - Multi-Select
 
 Use the `useComboboxControls` hook to get fine-grained control over the input value and the dropdown expansion states or just manage the value and expanded state yourself!
 
 In this example, we utilize DatalistInput to act as a multi-select control:
 
 ```jsx
-import { DatalistInput, useComboboxControls, startsWithValueFilter } from '../combobox';
+import { DatalistInput, useComboboxControls, startsWithValueFilter } from 'react-datalist-input';
 
 const YourComponent = () => {
   // useComboboxControls returns state and handlers for the input value and the dropdown expansion state
