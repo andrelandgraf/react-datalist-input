@@ -1,4 +1,4 @@
-* {
+.react-datalist-input__container > * {
   box-sizing: border-box;
 }
 
