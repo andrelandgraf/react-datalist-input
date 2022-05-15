@@ -112,7 +112,7 @@ Full refactor of react-datalist-input.
 - Exposes helper hooks
 - Exposes underlying components for full customization
 
-**Note:** Be aware that version 3.0.0 includes breaking changes. Version 3.0.0 deprecates some properties from the DatalistInput component but all but one use case still be implemented in the new version (in a more intuitive way using the `useComboboxControls` hook). The only property that has been fully depcreated is `requiredInputLength`. Please create an [Issue](https://github.com/andrelandgraf/react-datalist-input/issues) if you need it!
+**Note:** Be aware that version 3.0.0 includes breaking changes. Version 3.0.0 deprecates some properties from the DatalistInput component such as `requiredInputLength`. Instead of using custom properties for different use cases, you have now full control using the `useComboboxControls` hook and the `filters` property. Use plain React state and callbacks to control every aspect of the component's behavior!
 
 #### Version 2.2.0
 
@@ -180,7 +180,7 @@ const YourComponent = ({ options }) => {
         // optional: label, node
         // label: option.name, // use a custom label instead of the value
         // node: option.name, // use a custom ReactNode to display the option
-        ...option, // pass along any other properties, will be available in your onSelect callback
+        ...option, // pass along any other properties to access in your onSelect callback
       })),
     [yourItems],
   );
@@ -199,10 +199,19 @@ However, you can also customize the styling by providing your own CSS! Instead o
 
 - `react-datalist-input__container`: For the container element.
 - `react-datalist-input__textbox`: For the input element.
+- `react-datalist-input__label`: For the label element.
 - `react-datalist-input__listbox`: For the dropdown list.
 - `react-datalist-input__listbox-option`: For each option in the dropdown list.
 
-**Note:** To get up and running quickly, just copy-paste the default stylesheet and adapt the pieces you need.
+**Note:** Use the focus and hover states of `react-datalist-input__listbox-option` to show the user some visual feedback.
+
+```css
+.react-datalist-input__listbox-option:focus {
+  background-color: gray;
+}
+```
+
+**Tip:** To get up and running quickly, just copy-paste the default stylesheet and adapt the pieces you need.
 
 #### Tailwind CSS / Utility Classes
 
@@ -210,6 +219,7 @@ Alternatively, you can also pass custom classes to each element of the DatalistI
 
 - `className`: For the container element.
 - `inputProps["className"]`: For the input element.
+- `labelProps["className"]`: For the label element.
 - `listboxProps["className"]`: For the dropdown list.
 - `listboxOptionProps["className"]`: For each option in the dropdown list.
 - `isExpandedClassName`: Applied to the dropdown list if it is expanded.
@@ -348,6 +358,7 @@ DatalistInput accepts the following properties:
 - `selectedItem`: The currently selected item. Important for ARIA. DatalistInput keeps track of the last selected item. You only need to provide this prop if you want to change the selected item outside of the component.
 - `inputProps`: An object of props to pass to the combobox input element.
 - `listboxProps`: An object of props to pass to the listbox element.
+- `labelProps`: An object of props to pass to the label element.
 - `listboxOptionProps`: An object of props to pass to the listbox option elements.
 - `isExpandedClassName`: The class name applied to the listbox element if it is expanded.
 - `isCollapsedClassName`: The class name applied to the listbox element if it is collapsed.

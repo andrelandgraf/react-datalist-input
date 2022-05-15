@@ -575,7 +575,7 @@ const useFilters = (
   return [filtered, filteredRef];
 };
 
-type LabelProps =
+type LabelOptionProps =
   | {
       showLabel?: false;
       label: string;
@@ -585,7 +585,9 @@ type LabelProps =
       label: ReactNode;
     };
 
-type DatalistInputProps = LabelProps &
+type LabelProps = HTMLAttributes<HTMLLabelElement>;
+
+type DatalistInputProps = LabelOptionProps &
   Omit<HTMLAttributes<HTMLDivElement>, 'onSelect'> & {
     items: Array<Item>;
     selectedItem?: Item;
@@ -597,6 +599,7 @@ type DatalistInputProps = LabelProps &
     placeholder?: ComboboxInputProps['placeholder'];
     filters?: Array<Filter>;
     inputProps?: ComboboxInputProps;
+    labelProps?: LabelProps;
     listboxProps?: ListboxProps;
     listboxOptionProps?: ListboxOptionProps;
     isExpandedClassName?: string;
@@ -627,6 +630,7 @@ const DatalistInput = forwardRef<HTMLDivElement, PropsWithRef<DatalistInputProps
       setIsExpanded,
       filters = [startsWithValueFilter],
       inputProps,
+      labelProps,
       listboxOptionProps,
       listboxProps,
       isExpandedClassName = '',
@@ -700,7 +704,15 @@ const DatalistInput = forwardRef<HTMLDivElement, PropsWithRef<DatalistInputProps
           selectedItemId={internalSelectedItem?.id}
           isExpanded={internalIsExpanded}
         >
-          {showLabel && <label htmlFor={inputProps?.id || internalTextboxId}>{label}</label>}
+          {showLabel && (
+            <label
+              {...labelProps}
+              className={`react-datalist-input__label ${labelProps?.className}`}
+              htmlFor={inputProps?.id || internalTextboxId}
+            >
+              {label}
+            </label>
+          )}
           <ComboboxInput
             {...inputProps}
             ref={comboboxInputRef}
