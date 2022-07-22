@@ -146,7 +146,7 @@ Changes:
 import React, { useState, useMemo, useCallback } from 'react';
 // Import the DataListInput component
 import DataListInput from 'react-datalist-input';
-// Tntegrate the css file if you want to use the default styling
+// Integrate the css file if you want to use the default styling
 import 'react-datalist-input/dist/styles.css';
 
 // Your data source
@@ -182,7 +182,7 @@ const YourComponent = ({ options }) => {
         // node: option.name, // use a custom ReactNode to display the option
         ...option, // pass along any other properties to access in your onSelect callback
       })),
-    [yourItems],
+    [],
   );
 
   return (
@@ -224,6 +224,58 @@ Alternatively, you can also pass custom classes to each element of the DatalistI
 - `listboxOptionProps["className"]`: For each option in the dropdown list.
 - `isExpandedClassName`: Applied to the dropdown list if it is expanded.
 - `isCollapsedClassName`: Applied to the dropdown list if it is collapsed. !If provided, you must manage the hiding of the dropdown list yourself!
+
+### Custom Item Components
+
+You can also customize the rendering of each item in the dropdown list by providing a custom component.
+
+```tsx
+import { useMemo } from 'react';
+import type { Item } from '../combobox';
+import { DatalistInput, useComboboxControls } from '../combobox';
+
+type CustomItem = Item & {
+  description: string;
+};
+
+const items: Array<CustomItem> = [
+  { id: 'Chocolate', value: 'Chocolate', description: 'Chocolate is delicious' },
+  { id: 'Coconut', value: 'Coconut', description: 'Coconut is tasty but watch your head!' },
+  { id: 'Mint', value: 'Mint', description: 'Mint is a herb?' },
+  { id: 'Strawberry', value: 'Strawberry', description: 'Strawberries are red' },
+  { id: 'Vanilla', value: 'Vanilla', description: 'Vanilla is a flavor' },
+];
+
+const CustomItem = ({ item }: { item: CustomItem }) => {
+  // Each item is wrapped in a li element, so we don't need to provide a custom li element here.
+  return (
+    <div style={{ display: 'flex', gap: '5px', flexDirection: 'column' }}>
+      <b>{item.value}</b>
+      <span>{item.description}</span>
+    </div>
+  );
+};
+
+export default function Index() {
+  const customItems = items.map((item) => ({
+    // each item requires an id and value
+    ...item,
+    // but we can also add a custom component for the item
+    node: <CustomItem item={item} />,
+  }));
+
+  return (
+    <DatalistInput
+      label={<div>Custom Label</div>}
+      placeholder="Chocolate"
+      items={customItems}
+      onSelect={(i) => console.log(i)}
+    />
+  );
+}
+```
+
+**Note:** Please note that by default the Item.value property is used for filtering. In case you want to filter over custom properties, make sure to implement a custom filter function.
 
 ### Custom Filtering
 
