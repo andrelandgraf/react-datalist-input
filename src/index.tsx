@@ -549,12 +549,21 @@ interface Item extends Record<string, any> {
 type Filter = (items: Array<Item>, value?: ComboboxInputProps['value']) => Array<Item>;
 
 /**
- * Default function for matching the current input value (needle) and the values of the items array.
+ * Alternative function for matching the current input value (needle) and the values of the items array.
  * Returns true if item.value is not of type string (all items will be displayed and a custom filter must be used).
  */
 const startsWithValueFilter: Filter = (items, value = '') =>
   items.filter((item) =>
     typeof item.value === 'string' ? item.value.substring(0, value.length).toLowerCase() === value.toLowerCase() : true,
+  );
+
+/**
+ * Default function for matching the current input value (needle) and the values of the items array.
+ * Returns true if item.value is not of type string (all items will be displayed and a custom filter must be used).
+ */
+const includesValueFilter: Filter = (items, value = '') =>
+  items.filter((item) =>
+    typeof item.value === 'string' ? item.value.toLowerCase().includes(value.toLocaleLowerCase()) : true,
   );
 
 const useFilters = (
@@ -628,7 +637,7 @@ const DatalistInput = forwardRef<HTMLDivElement, PropsWithRef<DatalistInputProps
       placeholder,
       isExpanded = DEFAULT_IS_EXPANDED,
       setIsExpanded,
-      filters = [startsWithValueFilter],
+      filters = [includesValueFilter],
       inputProps,
       labelProps,
       listboxOptionProps,
@@ -778,6 +787,7 @@ export {
   Combobox,
   DatalistInput,
   startsWithValueFilter,
+  includesValueFilter,
   useFilters,
   useComboboxContext,
   useComboboxControls,

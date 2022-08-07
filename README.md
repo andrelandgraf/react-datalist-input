@@ -100,7 +100,11 @@ The documentation below only applies to the latest version. Please find earlier 
 
 ### Changelog
 
-### Version 3.0.0
+#### Version 3.1.0
+
+Version 3.1.0 changes the default filter from `startsWith` to `includes` to match the behavior of the datalist HTML 5 element. You can read more information about filtering and how to use a custom filter down below (Filtering).
+
+#### Version 3.0.0
 
 Full refactor of react-datalist-input.
 
@@ -277,22 +281,56 @@ export default function Index() {
 
 **Note:** Please note that by default the Item.value property is used for filtering. In case you want to filter over custom properties, make sure to implement a custom filter function.
 
-### Custom Filtering
+### Filtering
+
+By default, the DatalistInput component will filter the dropdown list based on the value of the input element using the `includes` method. This follows the behavior of the datalist HTMl element. You can however provide your own filtering function by passing a custom `filter` function to the DatalistInput component.
+
+For instace, this package exposes a `startsWith` alternative filter functions that you can use as follows:
+
+```jsx
+import { DatalistInput, startsWithValueFilter } from 'react-datalist-input';
+
+const YourComponent = () => {
+  return <DatalistInput label="Select ice cream flavor" items={items} filters={[startsWithValueFilter]} />;
+};
+```
+
+Now, the dropdown list will only show items that start with the input value.
+
+You can also implement a custom filter function:
+
+```tsx
+import type { Filter } from 'react-datalist-input';
+import { DatalistInput } from 'react-datalist-input';
+
+const YourComponent = () => {
+  // Custom filter: Display all values that are smaller or equal than the input value
+  const myFilterFunction: Filter = useCallback(
+    (items, value) => items.filter((item) => item.value <= value),
+    [selectedItems],
+  );
+
+  return <DatalistInput label="Select ice cream flavor" items={items} filters={[myFilterFunction]} />;
+};
+```
+
+### Filter Chaining
 
 You can chain custom filters to filter the list of options displayed in the dropdown menu.
 
 For instance, display only the first three items in the list:
 
-```jsx
+```tsx
+import type { Filter } from 'react-datalist-input';
 // Import the default filter startWithValueFilter
-import DatalistInput, { startsWithValueFilter } from 'react-datalist-input';
+import { DatalistInput, includesValueFilter } from 'react-datalist-input';
 
 const YourComponent = () => {
   // Custom filter: Only display the first 3 items
-  const limitOptionsFilter: Filter = useCallback((options, value) => options.slice(0, 3), [selectedItems]);
+  const limitOptionsFilter: Filter = useCallback((items, value) => items.slice(0, 3), []);
 
   // First we filter by the value using the default filter, then we add a custom filter.
-  const filters = [startsWithValueFilter, customFilter];
+  const filters = [includesValueFilter, customFilter];
 
   return <DatalistInput label="Select ice cream flavor" items={items} filters={filters} />;
 };
@@ -425,7 +463,8 @@ The following utilities are exported together with the DatalistInput component:
 
 ### Utilities used together with DatalistInput
 
-- `startsWithValueFilter`: A default filter that filters the list of options by the input value.
+- `includesValueFilter`: The default filter that filters the list of options based on the value of the input. This filter follows the behavior of the datalist HTML element.
+- `startsWithValueFilter`: An alternative filter that filters based on the start of the option's value.
 - `useComboboxControls`: A hook to get the state and handlers for the input value and the dropdown expansion state.
 
 ### Utilities to implement a custom DatalistInput component

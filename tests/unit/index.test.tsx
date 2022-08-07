@@ -107,7 +107,7 @@ describe('DatalistInput', () => {
     expect(items.length).toBe(data.length);
     fireEvent.change(input, { target: { value: 'Pe' } });
     const matchingItems = container.querySelectorAll('li');
-    expect(matchingItems.length).toBe(3);
+    expect(matchingItems.length).toBe(4); // includes Grapes as well as it includes 'pe'
   });
 
   test('renders only 2 items slicing custom filter', async () => {
