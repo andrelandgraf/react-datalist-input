@@ -541,7 +541,8 @@ function useInternalSelectedItem(item?: Item): [Item | undefined, (item: Item) =
   return [selectedItem, setSelectedItem];
 }
 
-type Item = Record<string, unknown> & {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Item = any & {
   id: string;
   value: string; // Used for filtering. Used for displaying and highlighting if node not provided.
   node?: ReactNode; // Used for display.
