@@ -26,7 +26,7 @@ const YourComponent = () => (
 );
 ```
 
-_But DatalistInput is also intented to be easy to extend:_
+_But DatalistInput is also intended to be easy to extend:_
 
 ```jsx
 import DatalistInput, { useComboboxControls } from 'react-datalist-input';
@@ -84,7 +84,7 @@ You can also build something tailored to your own use case from scratch! Have a 
 
 This package follows the [WAI-ARIA 1.2](https://www.w3.org/TR/wai-aria-1.2/) specification. Be aware that version 1.2 is still in development. If you require a more battle-tested ARIA implementation, consider using [Reach UI](https://reach.tech/combobox/) instead.
 
-This package does not implement the optional `aria-activedescendant` property but rather programatically shifts focus to the active item. This might be up to change in the future!
+This package does not implement the optional `aria-activedescendant` property but rather programmatically shifts focus to the active item. This might be up to change in the future!
 
 ## Feedback & Issues
 
@@ -99,6 +99,12 @@ Please provide your [feedback](https://github.com/andrelandgraf/react-datalist-i
 The documentation below only applies to the latest version. Please find earlier versions of the documentation on [GitHub](https://github.com/andrelandgraf/react-datalist-input), e.g. version [2.2.1](https://github.com/andrelandgraf/react-datalist-input/blob/bab05504c0dffa5f9343f2fcb5f075a38bad2512/README.md).
 
 ### Changelog
+
+#### Version 3.2.0
+
+- Better `Item` type definition to make it easier to extend the items array.
+- Renamed `useComoboxHelpersConfigParams` to `UseComboboxHelpersConfigParams`.
+- `useComboboxContext` now exposes the `currentInputValue`, which can be handy when implementing custom item components with highlighting.
 
 #### Version 3.1.0
 
@@ -236,7 +242,7 @@ You can also customize the rendering of each item in the dropdown list by provid
 ```tsx
 import { useMemo } from 'react';
 import type { Item } from '../combobox';
-import { DatalistInput, useComboboxControls } from '../combobox';
+import { DatalistInput, useComboboxControls, useComboboxContext } from '../combobox';
 
 type CustomItem = Item & {
   description: string;
@@ -251,9 +257,19 @@ const items: Array<CustomItem> = [
 ];
 
 const CustomItem = ({ item }: { item: CustomItem }) => {
+  // get access to the combobox context for highlighting, etc.
+  const { currentInputValue, selectedItemId } = useComboboxContext();
+
   // Each item is wrapped in a li element, so we don't need to provide a custom li element here.
   return (
-    <div style={{ display: 'flex', gap: '5px', flexDirection: 'column' }}>
+    <div
+      style={{
+        display: 'flex',
+        gap: '5px',
+        flexDirection: 'column',
+        background: item.id === selectedItemId ? 'gray' : 'white',
+      }}
+    >
       <b>{item.value}</b>
       <span>{item.description}</span>
     </div>
@@ -285,7 +301,7 @@ export default function Index() {
 
 By default, the DatalistInput component will filter the dropdown list based on the value of the input element using the `includes` method. This follows the behavior of the datalist HTMl element. You can however provide your own filtering function by passing a custom `filter` function to the DatalistInput component.
 
-For instace, this package exposes a `startsWith` alternative filter functions that you can use as follows:
+For instance, this package exposes a `startsWith` alternative filter functions that you can use as follows:
 
 ```jsx
 import { DatalistInput, startsWithValueFilter } from 'react-datalist-input';
@@ -485,9 +501,9 @@ The following types are exported from react-datalist-input and available for use
 - `Filter`: A filter which can be added to the filters property of the DatalistInput component.
 - `Item`: An item that can be added to the items property of the DatalistInput component.
 - `DatalistInputProps`: The props accepted by the DatalistInput component.
-- `ComboxboxProps`: The props accepted by the low-level Combobox component.
+- `ComboboxProps`: The props accepted by the low-level Combobox component.
 - `ComboboxInputProps`: The props accepted by the low-level ComboboxInput component.
 - `ListboxProps`: The props accepted by the low-level Listbox component.
 - `ListboxOptionProps`: The props accepted by the low-level ListboxOption component.
 - `HighlightProps`: The props accepted by the low-level Highlight component.
-- `useComoboxHelpersConfigParams`: The params for the low-level `useComboboxHelpers` hook.
+- `UseComboboxHelpersConfigParams`: The params for the low-level `useComboboxHelpers` hook.
