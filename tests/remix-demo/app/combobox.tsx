@@ -93,18 +93,20 @@ const handleWith: HandleWith =
  * Hooks and context
  */
 
-interface ComboboxContext {
+type ComboboxContext = {
   contextAvailable: boolean; // Flag that context is available
   listboxId?: string; // The element that describes the option list of the element. [ARIA1.1#combobox]
   selectedItemId?: string; // The element that describes the selected option of the combobox.
   isExpanded?: boolean;
-}
+  currentInputValue?: string;
+};
 
 const ComboboxContext = createContext<ComboboxContext>({
   contextAvailable: true,
   listboxId: '',
   selectedItemId: '',
   isExpanded: DEFAULT_IS_EXPANDED,
+  currentInputValue: '',
 });
 
 const useComboboxContext = () => useContext(ComboboxContext);
@@ -137,8 +139,8 @@ function useClassNameStr<Params>(className: ClassName<Params>, params: Params) {
   );
 }
 
-type useComoboxHelpersConfigParams = {
-  itemsRef: MutableRefObject<Array<Item>>;
+type UseComboboxHelpersConfigParams = {
+  itemsRef: MutableRefObject<Item[]>;
   listboxRef: RefObject<HTMLElement>;
   comboboxInputRef: RefObject<HTMLInputElement>;
   isExpandedRef: React.MutableRefObject<boolean>;
@@ -154,7 +156,7 @@ type useComoboxHelpersConfigParams = {
  * Wrap the low-level components in the Combobox component
  * and pass the helpers down if you need them.
  */
-const useComboboxHelpers = ({
+function useComboboxHelpers({
   itemsRef,
   listboxRef,
   comboboxInputRef,
@@ -163,7 +165,7 @@ const useComboboxHelpers = ({
   setIsExpanded,
   setValue,
   setSelectedItem,
-}: useComoboxHelpersConfigParams) => {
+}: UseComboboxHelpersConfigParams) {
   /**
    * onChange callback for input field
    */
@@ -308,20 +310,20 @@ const useComboboxHelpers = ({
     handleKeyDownOnInput,
     handleKeyDownOnListboxOption,
   };
-};
+}
 
 /*
  * Low-level components
  */
 
-interface ComboboxInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value'> {
+type ComboboxInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'value'> & {
   value?: string;
-}
+};
 
 /**
  * The textbox input field.
  * Does currently not implement aria-activedescendant which is not obligatory for datalist input components.
- * Autocomplete off to prevent browser autocomplete from interfering with our own; can be overriden with props.
+ * Autocomplete off to prevent browser autocomplete from interfering with our own; can be overridden with props.
  */
 const ComboboxInput = forwardRef<HTMLInputElement, PropsWithRef<ComboboxInputProps>>(
   ({ value, ...props }, forwardedRef) => {
@@ -346,10 +348,10 @@ const ComboboxInput = forwardRef<HTMLInputElement, PropsWithRef<ComboboxInputPro
 );
 ComboboxInput.displayName = 'ComboboxInput';
 
-interface HighlightProps extends HTMLAttributes<HTMLElement> {
+type HighlightProps = HTMLAttributes<HTMLElement> & {
   currentInput?: string;
   as?: 'mark' | 'span';
-}
+};
 
 /**
  * Optional highlight component for the listbox option text.
@@ -376,7 +378,7 @@ const Highlight: React.FC<PropsWithChildren<HighlightProps>> = ({
         {as === 'mark' ? (
           <mark {...props}>{children.substring(index, index + inputLength)}</mark>
         ) : (
-          <span {...props}>{children.substring(index, inputLength)}</span>
+          <span {...props}>{children.substring(index, index + inputLength)}</span>
         )}
         {children.substring(index + inputLength, children.length)}
       </>
@@ -427,7 +429,7 @@ const Listbox = forwardRef<HTMLUListElement, PropsWithRef<ListboxProps>>(({ chil
     } else if (isExpanded && isExpanded !== isExpandedRef.current) {
       setHasExpanded(true);
     }
-    isExpandedRef.current = isExpanded; // dragpointer to the old value
+    isExpandedRef.current = isExpanded; // drag pointer to the old value
   }, [isExpanded]);
 
   // TODO https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-live instead of title
@@ -449,11 +451,12 @@ Listbox.displayName = 'Listbox';
  * Combobox - high-level component
  */
 
-interface ComboboxProps {
+type ComboboxProps = {
   listboxId?: ComboboxContext['listboxId'];
   selectedItemId?: ComboboxContext['selectedItemId'];
   isExpanded?: ComboboxContext['isExpanded'];
-}
+  currentInputValue?: ComboboxContext['currentInputValue'];
+};
 
 type Combobox = React.FC<PropsWithChildren<ComboboxProps>> & {
   ComboboxInput: typeof ComboboxInput;
@@ -466,11 +469,11 @@ type Combobox = React.FC<PropsWithChildren<ComboboxProps>> & {
  * A container that you can pass all low-level components yourself for advanced use-cases.
  * The Combobox provides the context for the combobox low-level components.
  */
-const Combobox: Combobox = ({ listboxId, selectedItemId, isExpanded = true, children }) => {
+const Combobox: Combobox = ({ currentInputValue, listboxId, selectedItemId, isExpanded = true, children }) => {
   const id = useId();
   return (
     <ComboboxContext.Provider
-      value={{ contextAvailable: true, listboxId: listboxId || id, selectedItemId, isExpanded }}
+      value={{ currentInputValue, contextAvailable: true, listboxId: listboxId || id, selectedItemId, isExpanded }}
     >
       {children}
     </ComboboxContext.Provider>
@@ -489,9 +492,9 @@ Combobox.Highlight = Highlight;
 /**
  * Internal hook used to create a ref for a state value to allow access to the state value without triggering a re-render.
  */
-function useStateRef<S>(initalState: S): [S, (newState: S) => void, React.MutableRefObject<S>] {
-  const [state, setState] = useState(initalState);
-  const ref = useRef(initalState);
+function useStateRef<S>(initialState: S): [S, (newState: S) => void, React.MutableRefObject<S>] {
+  const [state, setState] = useState(initialState);
+  const ref = useRef(initialState);
   const setStateRef = (newState: S) => {
     setState(newState);
     ref.current = newState;
@@ -528,7 +531,7 @@ const useInternalValue = (
 /**
  * Internal hook to keep track of the selected item.
  */
-const useInternalSelectedItem = (item?: Item): [Item | undefined, (item: Item) => void] => {
+function useInternalSelectedItem(item?: Item): [Item | undefined, (item: Item) => void] {
   const [selectedItem, setSelectedItem] = useState(item);
 
   useEffect(() => {
@@ -536,17 +539,17 @@ const useInternalSelectedItem = (item?: Item): [Item | undefined, (item: Item) =
   }, [item]);
 
   return [selectedItem, setSelectedItem];
-};
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-interface Item extends Record<string, any> {
+type Item = any & {
   id: string;
   value: string; // Used for filtering. Used for displaying and highlighting if node not provided.
   node?: ReactNode; // Used for display.
   label?: string; // If provided, will be used as the aria-label on the list element. If not provided, value will be used instead.
-}
+};
 
-type Filter = (items: Array<Item>, value?: ComboboxInputProps['value']) => Array<Item>;
+type Filter = (items: Item[], value?: ComboboxInputProps['value']) => Item[];
 
 /**
  * Alternative function for matching the current input value (needle) and the values of the items array.
@@ -566,12 +569,12 @@ const includesValueFilter: Filter = (items, value = '') =>
     typeof item.value === 'string' ? item.value.toLowerCase().includes(value.toLocaleLowerCase()) : true,
   );
 
-const useFilters = (
-  items: Array<Item>,
+function useFilters(
+  items: Item[],
   value: ComboboxInputProps['value'],
-  filters: Array<Filter>,
-): [Array<Item>, MutableRefObject<Array<Item>>] => {
-  const filteredRef = useRef<Array<Item>>(items);
+  filters: Filter[],
+): [Item[], MutableRefObject<Item[]>] {
+  const filteredRef = useRef<Item[]>(items);
   const filtered = useMemo(
     () => filters.reduce((currentItems, filter) => filter(currentItems, value), items),
     [items, filters, value],
@@ -582,7 +585,7 @@ const useFilters = (
   }, [filtered]);
 
   return [filtered, filteredRef];
-};
+}
 
 type LabelOptionProps =
   | {
@@ -596,21 +599,23 @@ type LabelOptionProps =
 
 type LabelProps = HTMLAttributes<HTMLLabelElement>;
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 type DatalistInputProps = LabelOptionProps &
   Omit<HTMLAttributes<HTMLDivElement>, 'onSelect'> & {
-    items: Array<Item>;
+    items: Item[];
     selectedItem?: Item;
     value?: ComboboxInputProps['value'];
-    setValue?: useComoboxHelpersConfigParams['setValue'];
-    onSelect?: useComoboxHelpersConfigParams['onSelect'];
+    setValue?: UseComboboxHelpersConfigParams['setValue'];
+    onSelect?: UseComboboxHelpersConfigParams['onSelect'];
     isExpanded?: ComboboxContext['isExpanded'];
-    setIsExpanded?: useComoboxHelpersConfigParams['setIsExpanded'];
+    setIsExpanded?: UseComboboxHelpersConfigParams['setIsExpanded'];
     placeholder?: ComboboxInputProps['placeholder'];
-    filters?: Array<Filter>;
+    filters?: Filter[];
     inputProps?: ComboboxInputProps;
     labelProps?: LabelProps;
     listboxProps?: ListboxProps;
     listboxOptionProps?: ListboxOptionProps;
+    highlightProps?: HighlightProps;
     isExpandedClassName?: string;
     isCollapsedClassName?: string;
     isExpandedStyle?: CSSProperties;
@@ -642,6 +647,7 @@ const DatalistInput = forwardRef<HTMLDivElement, PropsWithRef<DatalistInputProps
       labelProps,
       listboxOptionProps,
       listboxProps,
+      highlightProps,
       isExpandedClassName = '',
       isCollapsedClassName = '',
       isExpandedStyle,
@@ -712,6 +718,7 @@ const DatalistInput = forwardRef<HTMLDivElement, PropsWithRef<DatalistInputProps
           listboxId={listboxProps?.id}
           selectedItemId={internalSelectedItem?.id}
           isExpanded={internalIsExpanded}
+          currentInputValue={internalValue}
         >
           {showLabel && (
             <label
@@ -759,7 +766,9 @@ const DatalistInput = forwardRef<HTMLDivElement, PropsWithRef<DatalistInputProps
                   onKeyDown={handleWith(handleKeyDownOnListboxOption, listboxOptionProps?.onKeyDown)}
                   className={`react-datalist-input__listbox-option ${listboxOptionProps?.className}`}
                 >
-                  <Highlight currentInput={internalValue}>{item.node || item.value}</Highlight>
+                  <Highlight {...highlightProps} currentInput={internalValue}>
+                    {item.node || item.value}
+                  </Highlight>
                 </ListboxOption>
               ))}
             </Listbox>
@@ -778,7 +787,7 @@ export type {
   ListboxProps,
   ListboxOptionProps,
   HighlightProps,
-  useComoboxHelpersConfigParams,
+  UseComboboxHelpersConfigParams,
   Item,
   Filter,
 };

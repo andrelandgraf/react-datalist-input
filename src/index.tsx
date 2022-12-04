@@ -615,6 +615,7 @@ type DatalistInputProps = LabelOptionProps &
     labelProps?: LabelProps;
     listboxProps?: ListboxProps;
     listboxOptionProps?: ListboxOptionProps;
+    highlightProps?: HighlightProps;
     isExpandedClassName?: string;
     isCollapsedClassName?: string;
     isExpandedStyle?: CSSProperties;
@@ -646,6 +647,7 @@ const DatalistInput = forwardRef<HTMLDivElement, PropsWithRef<DatalistInputProps
       labelProps,
       listboxOptionProps,
       listboxProps,
+      highlightProps,
       isExpandedClassName = '',
       isCollapsedClassName = '',
       isExpandedStyle,
@@ -764,7 +766,9 @@ const DatalistInput = forwardRef<HTMLDivElement, PropsWithRef<DatalistInputProps
                   onKeyDown={handleWith(handleKeyDownOnListboxOption, listboxOptionProps?.onKeyDown)}
                   className={`react-datalist-input__listbox-option ${listboxOptionProps?.className}`}
                 >
-                  <Highlight currentInput={internalValue}>{item.node || item.value}</Highlight>
+                  <Highlight {...highlightProps} currentInput={internalValue}>
+                    {item.node || item.value}
+                  </Highlight>
                 </ListboxOption>
               ))}
             </Listbox>

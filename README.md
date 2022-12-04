@@ -466,6 +466,7 @@ DatalistInput accepts the following properties:
 - `listboxProps`: An object of props to pass to the listbox element.
 - `labelProps`: An object of props to pass to the label element.
 - `listboxOptionProps`: An object of props to pass to the listbox option elements.
+- `highlightProps`: An object of props to style the highlighted text.
 - `isExpandedClassName`: The class name applied to the listbox element if it is expanded.
 - `isCollapsedClassName`: The class name applied to the listbox element if it is collapsed.
 - `isExpandedStyle`: The inline style applied to the listbox element if it is expanded.

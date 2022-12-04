@@ -10,6 +10,7 @@
   --padding: 5px;
   --border-radius: 5px;
   --border: 1px solid var(--gray);
+  --yellow: rgb(255, 255, 0);
 }
 
 .react-datalist-input__textbox {
@@ -50,4 +51,8 @@
 
 .react-datalist-input__listbox-option:hover {
   background-color: var(--gray);
+}
+
+.highlighted-text {
+  background-color: var(--yellow);
 }

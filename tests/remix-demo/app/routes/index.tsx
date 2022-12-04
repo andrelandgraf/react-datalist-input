@@ -56,6 +56,10 @@ export default function Index() {
             required: true,
             pattern: `^(${items.map((i) => i.value).join('|')})$`,
           }}
+          highlightProps={{
+            as: 'span',
+            className: 'highlighted-text',
+          }}
         />
         <button type="submit">Submit</button>
       </form>
