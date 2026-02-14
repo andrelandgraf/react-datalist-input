@@ -1,6 +1,6 @@
 {
   "name": "react-datalist-input",
-  "version": "3.2.1",
+  "version": "3.3.0",
   "description": "react-datalist-input provides a React datalist/combobox component called DatalistInput. The component contains an input field with a dropdown menu of suggestions based on the current input.",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -61,7 +61,7 @@
     "rollup": "^2.70.1",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
-    "rollup-plugin-typescript2": "^0.30.0",
+    "rollup-plugin-typescript2": "^0.36.0",
     "sass": "^1.41.0",
     "ts-jest": "^27.0.5",
     "ts-node": "^10.2.1",

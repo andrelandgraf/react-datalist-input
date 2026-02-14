@@ -100,6 +100,12 @@ The documentation below only applies to the latest version. Please find earlier 
 
 ### Changelog
 
+#### Version 3.3.0
+
+- Add React 19 peer dependency support while keeping React 18 compatibility.
+- Migrate the demo app from legacy Remix/Netlify setup to Vite + React Router + Vitest.
+- Update build tooling to keep package builds working on newer Node.js versions.
+
 #### Version 3.2.0
 
 - Better `Item` type definition to make it easier to extend the items array.
