@@ -1,21 +1,16 @@
 {
-  "include": ["remix.env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["src", "vite.config.ts", "app/combobox.tsx"],
   "compilerOptions": {
-    "lib": ["DOM", "DOM.Iterable", "ES2019"],
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
     "isolatedModules": true,
     "esModuleInterop": true,
     "jsx": "react-jsx",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
+    "module": "ESNext",
     "resolveJsonModule": true,
-    "target": "ES2019",
+    "target": "ES2022",
     "strict": true,
-    "baseUrl": ".",
-    "paths": {
-      "~/*": ["./app/*"]
-    },
-    // TODO once react 18 types are in @types/react, "node", "react/next", "react-dom/next" field can be removed and tslibs library removed from npm dependencies
-    "types": ["node", "react/next", "react-dom/next"],
-    // Remix takes care of building everything in `remix build`.
+    "types": ["vite/client", "vitest/globals"],
     "noEmit": true
   }
 }
