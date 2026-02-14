@@ -51,7 +51,7 @@ const YourComponent = () => {
 
 ## Installation
 
-**Note: React 18 required!** Version 3.0.0 utilizes React 18. If you use React <=17, install `react-datalist-input@2.2.1` instead! Find the documentation for version 2.2.1 [here](https://github.com/andrelandgraf/react-datalist-input/blob/bab05504c0dffa5f9343f2fcb5f075a38bad2512/README.md).
+**Note: React 18 or 19 required!** Version 3.0.0 utilizes React 18 APIs and is compatible with React 19. If you use React <=17, install `react-datalist-input@2.2.1` instead! Find the documentation for version 2.2.1 [here](https://github.com/andrelandgraf/react-datalist-input/blob/bab05504c0dffa5f9343f2fcb5f075a38bad2512/README.md).
 
 ### npm
 
@@ -92,7 +92,7 @@ Please provide your [feedback](https://github.com/andrelandgraf/react-datalist-i
 
 ## Versions
 
-- Version 3.x.x is written in TypeScript and requires React 18.
+- Version 3.x.x is written in TypeScript and supports React 18 and 19.
 - Version 2.x.x serves a functional component using hooks.
 - Version 1.x.x serves a class component.
 
